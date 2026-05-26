@@ -167,10 +167,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const results = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: extractMainContent
-      });
+      let results;
+      try {
+        results = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: extractMainContent
+        });
+      } catch (error) {
+        console.error('Script injection error:', error);
+        // Check if it's a connection error (content script not ready)
+        if (error.message && (error.message.includes('Extension context') ||
+            error.message.includes('Receiving end does not exist') ||
+            error.message.includes('Could not establish'))) {
+          showError(getMessage('contentScriptNotReady'), true);
+        } else {
+          showError(getMessage('cannotAccessPage'), true);
+        }
+        return;
+      }
 
       if (!results || !results[0] || !results[0].result) {
         showState(emptyState);

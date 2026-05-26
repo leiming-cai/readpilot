@@ -284,5 +284,9 @@
   "selectTemplate": {
     "message": "Select Template",
     "description": "Template selector label in popup"
+  },
+  "contentScriptNotReady": {
+    "message": "Please refresh the page first, then try again.",
+    "description": "Content script not injected error"
   }
 }

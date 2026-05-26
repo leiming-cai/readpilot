@@ -284,5 +284,9 @@
   "selectTemplate": {
     "message": "选择模板",
     "description": "Template selector label in popup"
+  },
+  "contentScriptNotReady": {
+    "message": "请先刷新页面后再试。",
+    "description": "Content script not injected error"
   }
 }
