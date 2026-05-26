@@ -3,26 +3,66 @@ function getMessage(key, substitutions) {
   return chrome.i18n.getMessage(key, substitutions) || key;
 }
 
-// Template helpers
+// Template helpers - using i18n for template names
+const BUILT_IN_TEMPLATES = () => ({
+  bulletSummary: {
+    id: 'bulletSummary',
+    name: getMessage('bulletSummaryName'),
+    prompt: getMessage('bulletSummaryPrompt')
+  },
+  detailedSummary: {
+    id: 'detailedSummary',
+    name: getMessage('detailedSummaryName'),
+    prompt: getMessage('detailedSummaryPrompt')
+  },
+  keyTakeaways: {
+    id: 'keyTakeaways',
+    name: getMessage('keyTakeawaysName'),
+    prompt: getMessage('keyTakeawaysPrompt')
+  },
+  plainEnglish: {
+    id: 'plainEnglish',
+    name: getMessage('plainEnglishName'),
+    prompt: getMessage('plainEnglishPrompt')
+  }
+});
+
 async function getTemplates() {
   return new Promise((resolve) => {
     chrome.storage.local.get(['summaryTemplates'], (result) => {
-      resolve(result.summaryTemplates || null);
+      if (result.summaryTemplates && result.summaryTemplates.builtIn) {
+        resolve(result.summaryTemplates);
+      } else {
+        // Return built-in templates as default
+        resolve({
+          defaultTemplate: 'plainEnglish',
+          builtIn: BUILT_IN_TEMPLATES(),
+          custom: {}
+        });
+      }
     });
   });
 }
 
 function getTemplateById(templates, templateId) {
   if (!templates) return null;
-  if (templates.builtIn && templates.builtIn[templateId]) {
-    return templates.builtIn[templateId];
+
+  // builtIn might be a function or object
+  const builtIn = typeof templates.builtIn === 'function' ? templates.builtIn() : templates.builtIn;
+
+  if (builtIn && builtIn[templateId]) {
+    return builtIn[templateId];
   }
   if (templates.custom && templates.custom[templateId]) {
     return templates.custom[templateId];
   }
   // Fallback to default
-  if (templates.builtIn && templates.builtIn[templates.defaultTemplate]) {
-    return templates.builtIn[templates.defaultTemplate];
+  if (builtIn && builtIn[templates.defaultTemplate]) {
+    return builtIn[templates.defaultTemplate];
+  }
+  // Last resort fallback
+  if (builtIn && builtIn.plainEnglish) {
+    return builtIn.plainEnglish;
   }
   return null;
 }
@@ -36,28 +76,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize template selector
   async function initTemplateSelector() {
-    const templates = await getTemplates();
-    const templateSelect = document.getElementById('templateSelect');
-    if (!templateSelect || !templates) return;
+    try {
+      const templates = await getTemplates();
+      const templateSelect = document.getElementById('templateSelect');
+      if (!templateSelect || !templates || !templates.builtIn) return;
 
-    const defaultId = templates.defaultTemplate;
+      const defaultId = templates.defaultTemplate || 'plainEnglish';
+      const builtIn = templates.builtIn;
 
-    // Populate options
-    let optionsHtml = '';
+      // Populate options
+      let optionsHtml = '';
 
-    // Built-in templates
-    Object.values(templates.builtIn).forEach(t => {
-      const selected = t.id === defaultId ? 'selected' : '';
-      optionsHtml += `<option value="${t.id}" ${selected}>${t.name}</option>`;
-    });
+      // Built-in templates
+      if (builtIn && typeof builtIn === 'object') {
+        Object.values(builtIn).forEach(t => {
+          if (t && t.id && t.name) {
+            const selected = t.id === defaultId ? 'selected' : '';
+            optionsHtml += `<option value="${t.id}" ${selected}>${t.name}</option>`;
+          }
+        });
+      }
 
-    // Custom templates
-    Object.values(templates.custom).forEach(t => {
-      const selected = t.id === defaultId ? 'selected' : '';
-      optionsHtml += `<option value="${t.id}" ${selected}>${t.name}</option>`;
-    });
+      // Custom templates
+      if (templates.custom && typeof templates.custom === 'object') {
+        Object.values(templates.custom).forEach(t => {
+          if (t && t.id && t.name) {
+            const selected = t.id === defaultId ? 'selected' : '';
+            optionsHtml += `<option value="${t.id}" ${selected}>${t.name}</option>`;
+          }
+        });
+      }
 
-    templateSelect.innerHTML = optionsHtml;
+      if (optionsHtml) {
+        templateSelect.innerHTML = optionsHtml;
+      }
+    } catch (error) {
+      console.error('Error initializing template selector:', error);
+    }
   }
 
   const summarizeBtn = document.getElementById('summarizeBtn');
