@@ -3,12 +3,62 @@ function getMessage(key, substitutions) {
   return chrome.i18n.getMessage(key, substitutions) || key;
 }
 
+// Template helpers
+async function getTemplates() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['summaryTemplates'], (result) => {
+      resolve(result.summaryTemplates || null);
+    });
+  });
+}
+
+function getTemplateById(templates, templateId) {
+  if (!templates) return null;
+  if (templates.builtIn && templates.builtIn[templateId]) {
+    return templates.builtIn[templateId];
+  }
+  if (templates.custom && templates.custom[templateId]) {
+    return templates.custom[templateId];
+  }
+  // Fallback to default
+  if (templates.builtIn && templates.builtIn[templates.defaultTemplate]) {
+    return templates.builtIn[templates.defaultTemplate];
+  }
+  return null;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Apply i18n to all elements with data-i18n attribute
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     el.textContent = getMessage(key);
   });
+
+  // Initialize template selector
+  async function initTemplateSelector() {
+    const templates = await getTemplates();
+    const templateSelect = document.getElementById('templateSelect');
+    if (!templateSelect || !templates) return;
+
+    const defaultId = templates.defaultTemplate;
+
+    // Populate options
+    let optionsHtml = '';
+
+    // Built-in templates
+    Object.values(templates.builtIn).forEach(t => {
+      const selected = t.id === defaultId ? 'selected' : '';
+      optionsHtml += `<option value="${t.id}" ${selected}>${t.name}</option>`;
+    });
+
+    // Custom templates
+    Object.values(templates.custom).forEach(t => {
+      const selected = t.id === defaultId ? 'selected' : '';
+      optionsHtml += `<option value="${t.id}" ${selected}>${t.name}</option>`;
+    });
+
+    templateSelect.innerHTML = optionsHtml;
+  }
 
   const summarizeBtn = document.getElementById('summarizeBtn');
   const loadingState = document.getElementById('loadingState');
@@ -18,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage = document.getElementById('errorMessage');
   const retryBtn = document.getElementById('retryBtn');
   const emptyState = document.getElementById('emptyState');
+
+  // Call initTemplateSelector after element selections
+  initTemplateSelector();
 
   function showState(state) {
     loadingState.classList.add('hidden');
@@ -85,6 +138,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
+      // Get selected template
+      const templates = await getTemplates();
+      const templateSelect = document.getElementById('templateSelect');
+      const selectedTemplateId = templateSelect?.value || templates?.defaultTemplate;
+      const selectedTemplate = getTemplateById(templates, selectedTemplateId);
+      const systemPrompt = selectedTemplate?.prompt || getMessage('bulletSummaryPrompt');
+
       const apiResponse = await fetch(`${settings.apiBaseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -96,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
           messages: [
             {
               role: 'system',
-              content: 'You are a professional summarizer. Read the following article and write a concise summary in 3-5 bullet points. Focus on the main points and key takeaways. Language: match the input language.'
+              content: systemPrompt
             },
             {
               role: 'user',
