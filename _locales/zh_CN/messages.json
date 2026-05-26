@@ -288,5 +288,13 @@
   "contentScriptNotReady": {
     "message": "请先刷新页面后再试。",
     "description": "Content script not injected error"
+  },
+  "copy": {
+    "message": "复制",
+    "description": "Copy button text"
+  },
+  "copied": {
+    "message": "已复制！",
+    "description": "Copied confirmation"
   }
 }

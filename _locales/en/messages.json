@@ -288,5 +288,13 @@
   "contentScriptNotReady": {
     "message": "Please refresh the page first, then try again.",
     "description": "Content script not injected error"
+  },
+  "copy": {
+    "message": "Copy",
+    "description": "Copy button text"
+  },
+  "copied": {
+    "message": "Copied!",
+    "description": "Copied confirmation"
   }
 }

@@ -123,6 +123,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage = document.getElementById('errorMessage');
   const retryBtn = document.getElementById('retryBtn');
   const emptyState = document.getElementById('emptyState');
+  const copyBtn = document.getElementById('copyBtn');
+
+  // Copy button handler
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      const text = summaryContent.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.classList.add('copied');
+        const span = copyBtn.querySelector('span');
+        const originalText = span.textContent;
+        span.textContent = getMessage('copied') || 'Copied!';
+        setTimeout(() => {
+          copyBtn.classList.remove('copied');
+          span.textContent = originalText;
+        }, 1500);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+    });
+  }
 
   // Call initTemplateSelector after element selections
   initTemplateSelector();
