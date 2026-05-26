@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=400, initial-scale=1.0">
   <title data-i18n="extensionName">ReadPilot</title>
   <link rel="stylesheet" href="popup.css">
+  <style>
+    .template-select {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .template-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -24,6 +43,13 @@
     </header>
 
     <main class="main">
+      <div class="form-group">
+        <label for="templateSelect" data-i18n="selectTemplate">Select Template</label>
+        <select id="templateSelect" class="template-select">
+          <option value="" data-i18n="selectTemplateOption">Choose a template...</option>
+        </select>
+      </div>
+
       <button id="summarizeBtn" class="summarize-btn">
         <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path d="M4 5h12M4 10h8M4 15h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
