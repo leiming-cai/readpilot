@@ -47,6 +47,9 @@ body {
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
 }
 
@@ -226,23 +229,18 @@ body {
   display: none !important;
 }
 
-.footer {
-  margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-
 .settings-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  padding: 8px;
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 13px;
-  transition: color 0.2s;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 
 .settings-link:hover {
   color: var(--primary);
+  background: var(--bg-secondary);
 }
