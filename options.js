@@ -1,4 +1,21 @@
+// i18n helper
+function getMessage(key, substitutions) {
+  return chrome.i18n.getMessage(key, substitutions) || key;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Apply i18n to all elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = getMessage(key);
+  });
+
+  // Apply i18n to placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = getMessage(key);
+  });
+
   const apiKeyInput = document.getElementById('apiKey');
   const apiBaseUrlInput = document.getElementById('apiBaseUrl');
   const maxTokensSlider = document.getElementById('maxTokens');
@@ -82,12 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxTokens = parseInt(maxTokensSlider.value, 10);
 
     if (!apiKey) {
-      showStatus('Please enter an API key', true);
+      showStatus(getMessage('enterApiKey'), true);
       return;
     }
 
     if (!apiBaseUrl.startsWith('http')) {
-      showStatus('Invalid URL format', true);
+      showStatus(getMessage('invalidUrlFormat'), true);
       return;
     }
 
@@ -101,17 +118,17 @@ document.addEventListener('DOMContentLoaded', () => {
         apiBaseUrl: apiBaseUrl,
         maxTokens: maxTokens
       }, () => {
-        showStatus('Settings saved and connection verified!', false);
+        showStatus(getMessage('settingsSaved'), false);
       });
     } catch (error) {
       if (error.message.includes('401') || error.message.includes('Incorrect API key')) {
-        showStatus('Invalid API key. Please check and try again.', true);
+        showStatus(getMessage('invalidApiKey'), true);
       } else if (error.message.includes('429')) {
-        showStatus('Rate limit hit. Please wait and try again.', true);
+        showStatus(getMessage('rateLimitHit'), true);
       } else if (error.message.includes('fetch') || error.message.includes('NetworkError')) {
-        showStatus('Network error. Please check your connection.', true);
+        showStatus(getMessage('networkError'), true);
       } else {
-        showStatus(`Connection failed: ${error.message}`, true);
+        showStatus(getMessage('connectionFailed', [error.message]), true);
       }
     } finally {
       setLoading(false);
@@ -125,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     maxTokensValue.textContent = DEFAULT_MAX_TOKENS;
     
     chrome.storage.local.remove(['apiKey', 'apiBaseUrl', 'maxTokens'], () => {
-      showStatus('Settings reset to defaults', false);
+      showStatus(getMessage('settingsReset'), false);
     });
   }
 

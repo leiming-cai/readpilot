@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "ReadPilot",
+  "default_locale": "en",
+  "name": "__MSG_extensionName__",
   "version": "1.0.0",
-  "description": "AI-powered page summarization and text explanation tool",
+  "description": "__MSG_extensionDescription__",
   "permissions": [
     "activeTab",
     "storage",
@@ -18,7 +19,8 @@
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
-    }
+    },
+    "default_title": "__MSG_extensionName__"
   },
   "content_scripts": [
     {

@@ -1,4 +1,15 @@
+// i18n helper
+function getMessage(key, substitutions) {
+  return chrome.i18n.getMessage(key, substitutions) || key;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Apply i18n to all elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = getMessage(key);
+  });
+
   const summarizeBtn = document.getElementById('summarizeBtn');
   const loadingState = document.getElementById('loadingState');
   const summaryOutput = document.getElementById('summaryOutput');
@@ -37,18 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const apiKey = await checkApiKey();
       if (!apiKey) {
-        showError('API key not configured. Please set it in Settings.');
+        showError(getMessage('apiKeyNotConfigured'));
         return;
       }
 
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
       if (!tab || !tab.id) {
-        showError('Cannot access current tab. Please try again.');
+        showError(getMessage('cannotAccessPage'));
         return;
       }
 
-      // Use chrome.scripting.executeScript to extract content directly
       const results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: extractMainContent
@@ -100,11 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!apiResponse.ok) {
         if (apiResponse.status === 429) {
-          showError('API rate limit exceeded. Please wait and try again.', true);
+          showError(getMessage('apiRateLimit'), true);
         } else if (apiResponse.status === 401) {
-          showError('Invalid API key. Please check your Settings.');
+          showError(getMessage('invalidApiKey'));
         } else {
-          showError(`API error: ${apiResponse.status}`, true);
+          showError(getMessage('apiError', [apiResponse.status.toString()]), true);
         }
         return;
       }
@@ -118,11 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Summarize error:', error);
       const errorMsg = error.message || '';
       if (errorMsg.includes('Extension context invalidated') || errorMsg.includes('no reason')) {
-        showError('Extension reloaded. Please try again.', false);
+        showError(getMessage('extensionReloaded'), false);
       } else if (errorMsg.includes('Cannot access')) {
-        showError('Cannot access page. Try reloading the page first.', true);
+        showError(getMessage('cannotAccessPage'), true);
       } else {
-        showError(`Error: ${errorMsg || 'Unknown error'}`, true);
+        showError(getMessage('connectionError', [errorMsg || 'Unknown error']), true);
       }
     } finally {
       summarizeBtn.disabled = false;

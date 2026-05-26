@@ -1,6 +1,11 @@
 (function() {
   'use strict';
 
+  // i18n helper for content script
+  function getMessage(key, substitutions) {
+    return chrome.i18n.getMessage(key, substitutions) || key;
+  }
+
   const MIN_SELECTION_LENGTH = 5;
   const BUTTON_ID = 'readpilot-explain-btn';
   const TOAST_ID = 'readpilot-explain-toast';
@@ -16,7 +21,7 @@
         <path d="M7 1v6M7 9v1M5 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
       </svg>
-      AI Explain
+      <span>${getMessage('explainButton')}</span>
     `;
     button.style.cssText = `
       position: absolute;
@@ -103,18 +108,18 @@
 
   async function handleExplain(selectedText) {
     if (!selectedText || selectedText.trim().length < MIN_SELECTION_LENGTH) {
-      showToast('Selection too short. Please select more text.', true);
+      showToast(getMessage('selectionTooShort'), true);
       return;
     }
 
     const settings = await getApiSettings();
 
     if (!settings.apiKey) {
-      showToast('API key not configured. Please set it in Settings.', true);
+      showToast(getMessage('apiKeyNotConfigured'), true);
       return;
     }
 
-    showToast('Getting explanation...');
+    showToast(getMessage('gettingExplanation'));
 
     try {
       const response = await fetch(`${settings.apiBaseUrl}/chat/completions`, {
@@ -142,21 +147,21 @@
 
       if (!response.ok) {
         if (response.status === 429) {
-          showToast('Rate limit exceeded. Please wait and try again.', true);
+          showToast(getMessage('apiRateLimit'), true);
         } else if (response.status === 401) {
-          showToast('Invalid API key. Please check your Settings.', true);
+          showToast(getMessage('invalidApiKey'), true);
         } else {
-          showToast(`API error: ${response.status}`, true);
+          showToast(getMessage('apiError', [response.status.toString()]), true);
         }
         return;
       }
 
       const data = await response.json();
-      const explanation = data.choices?.[0]?.message?.content || 'Unable to generate explanation.';
+      const explanation = data.choices?.[0]?.message?.content || getMessage('unableToGenerateExplanation');
 
       showToast(explanation);
     } catch (error) {
-      showToast(`Connection error: ${error.message}`, true);
+      showToast(getMessage('connectionError', [error.message]), true);
     }
   }
 

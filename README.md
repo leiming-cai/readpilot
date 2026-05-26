@@ -49,11 +49,32 @@ ReadPilot/
 ├── options.html      # 设置页面
 ├── options.js        # API 配置管理
 ├── background.js     # 服务工作者
+├── _locales/          # 国际化文件
+│   ├── en/
+│   │   └── messages.json
+│   └── zh_CN/
+│       └── messages.json
 └── icons/            # 扩展图标
     ├── icon16.png
     ├── icon48.png
     └── icon128.png
 ```
+
+## 国际化 (i18n)
+
+支持 **English** 和 **中文** 两种语言。
+
+扩展会自动检测 Chrome 浏览器语言设置并显示对应语言界面。
+
+| 文件 | 语言 |
+|------|------|
+| `_locales/en/messages.json` | English |
+| `_locales/zh_CN/messages.json` | 中文 |
+
+如需添加更多语言：
+1. 在 `_locales/` 下创建对应语言目录（如 `ja/`、`ko/`）
+2. 添加 `messages.json` 文件
+3. 在 `manifest.json` 中添加对应 `default_locale`
 
 ## 安装方法
 

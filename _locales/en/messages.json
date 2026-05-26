@@ -1,0 +1,196 @@
+{
+  "extensionName": {
+    "message": "ReadPilot",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "AI-powered page summarization and text explanation tool",
+    "description": "Extension description"
+  },
+  "summarizePage": {
+    "message": "Summarize Page",
+    "description": "Button text to summarize the current page"
+  },
+  "analyzingContent": {
+    "message": "Analyzing page content...",
+    "description": "Loading state message"
+  },
+  "summary": {
+    "message": "Summary",
+    "description": "Summary section header"
+  },
+  "error": {
+    "message": "Error",
+    "description": "Error section header"
+  },
+  "apiKeyNotConfigured": {
+    "message": "API key not configured. Please set it in Settings.",
+    "description": "Error when API key is missing"
+  },
+  "apiRateLimit": {
+    "message": "API rate limit exceeded. Please wait and try again.",
+    "description": "Rate limit error"
+  },
+  "invalidApiKey": {
+    "message": "Invalid API key. Please check your Settings.",
+    "description": "Invalid API key error"
+  },
+  "apiError": {
+    "message": "API error: $ERROR_CODE$. Please try again.",
+    "description": "Generic API error",
+    "placeholders": {
+      "error_code": {
+        "content": "$1",
+        "example": "500"
+      }
+    }
+  },
+  "connectionError": {
+    "message": "Connection error: $ERROR_MESSAGE$. Please try again.",
+    "description": "Network error",
+    "placeholders": {
+      "error_message": {
+        "content": "$1",
+        "example": "Failed to fetch"
+      }
+    }
+  },
+  "extensionReloaded": {
+    "message": "Extension reloaded. Please try again.",
+    "description": "Extension context invalidated"
+  },
+  "cannotAccessPage": {
+    "message": "Cannot access page. Try reloading the page first.",
+    "description": "Tab access error"
+  },
+  "noContentToSummarize": {
+    "message": "No content to summarize on this page.",
+    "description": "Empty page error"
+  },
+  "retry": {
+    "message": "Retry",
+    "description": "Retry button text"
+  },
+  "settings": {
+    "message": "Settings",
+    "description": "Settings link text"
+  },
+  "tagline": {
+    "message": "Smart Reading Assistant",
+    "description": "Extension tagline"
+  },
+  "gettingExplanation": {
+    "message": "Getting explanation...",
+    "description": "Loading state for text explanation"
+  },
+  "selectionTooShort": {
+    "message": "Selection too short. Please select more text.",
+    "description": "Error when selection is less than 5 characters"
+  },
+  "explainButton": {
+    "message": "AI Explain",
+    "description": "Floating button text"
+  },
+  "apiKeyLabel": {
+    "message": "DeepSeek API Key",
+    "description": "API key input label"
+  },
+  "apiKeyPlaceholder": {
+    "message": "Enter your DeepSeek API key",
+    "description": "API key input placeholder"
+  },
+  "apiBaseUrlLabel": {
+    "message": "API Base URL",
+    "description": "API URL input label"
+  },
+  "maxTokensLabel": {
+    "message": "Max Tokens",
+    "description": "Max tokens slider label"
+  },
+  "saveAndTest": {
+    "message": "Save & Test",
+    "description": "Save and test button"
+  },
+  "resetToDefault": {
+    "message": "Reset to Default",
+    "description": "Reset button"
+  },
+  "settingsSaved": {
+    "message": "Settings saved and connection verified!",
+    "description": "Success message after saving"
+  },
+  "settingsReset": {
+    "message": "Settings reset to defaults",
+    "description": "Reset success message"
+  },
+  "pleaseEnterApiKey": {
+    "message": "Please enter an API key",
+    "description": "Validation error"
+  },
+  "invalidUrlFormat": {
+    "message": "Invalid URL format",
+    "description": "URL validation error"
+  },
+  "connectionFailed": {
+    "message": "Connection failed: $ERROR_MESSAGE$",
+    "description": "Connection test failed",
+    "placeholders": {
+      "error_message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "howToGetApiKey": {
+    "message": "How to get your API key:",
+    "description": "Instructions header"
+  },
+  "apiKeyInstructions": {
+    "message": "1. Visit DeepSeek Platform\n2. Create an account or sign in\n3. Navigate to API Keys section\n4. Create a new API key and copy it here",
+    "description": "API key instructions"
+  },
+  "apiConfiguration": {
+    "message": "API Configuration",
+    "description": "Settings section title"
+  },
+  "settingsTitle": {
+    "message": "ReadPilot Settings",
+    "description": "Settings page title"
+  },
+  "settingsHeader": {
+    "message": "ReadPilot Settings",
+    "description": "Settings header"
+  },
+  "deepSeekPlatform": {
+    "message": "DeepSeek Platform",
+    "description": "DeepSeek platform link text"
+  },
+  "createAccount": {
+    "message": "Create an account or sign in",
+    "description": "Step to create account"
+  },
+  "navigateToApiKeys": {
+    "message": "Navigate to API Keys section",
+    "description": "Step to navigate to API keys"
+  },
+  "copyApiKey": {
+    "message": "Create a new API key and copy it here",
+    "description": "Step to copy API key"
+  },
+  "enterApiKey": {
+    "message": "Please enter an API key",
+    "description": "Validation message when API key is empty"
+  },
+  "rateLimitHit": {
+    "message": "Rate limit hit. Please wait and try again.",
+    "description": "Rate limit error message"
+  },
+  "networkError": {
+    "message": "Network error. Please check your connection.",
+    "description": "Network error message"
+  },
+  "unableToGenerateExplanation": {
+    "message": "Unable to generate explanation.",
+    "description": "Fallback message when explanation generation fails"
+  }
+}

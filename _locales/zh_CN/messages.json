@@ -1,0 +1,196 @@
+{
+  "extensionName": {
+    "message": "ReadPilot",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "AI智能阅读助手 - 页面摘要与文本解释工具",
+    "description": "Extension description"
+  },
+  "summarizePage": {
+    "message": "摘要页面",
+    "description": "Button text to summarize the current page"
+  },
+  "analyzingContent": {
+    "message": "正在分析页面内容...",
+    "description": "Loading state message"
+  },
+  "summary": {
+    "message": "摘要",
+    "description": "Summary section header"
+  },
+  "error": {
+    "message": "错误",
+    "description": "Error section header"
+  },
+  "apiKeyNotConfigured": {
+    "message": "API密钥未配置。请前往设置页面配置。",
+    "description": "Error when API key is missing"
+  },
+  "apiRateLimit": {
+    "message": "API请求频率超限。请稍后重试。",
+    "description": "Rate limit error"
+  },
+  "invalidApiKey": {
+    "message": "API密钥无效。请检查设置。",
+    "description": "Invalid API key error"
+  },
+  "apiError": {
+    "message": "API错误：$ERROR_CODE$。请重试。",
+    "description": "Generic API error",
+    "placeholders": {
+      "error_code": {
+        "content": "$1",
+        "example": "500"
+      }
+    }
+  },
+  "connectionError": {
+    "message": "连接错误：$ERROR_MESSAGE$。请重试。",
+    "description": "Network error",
+    "placeholders": {
+      "error_message": {
+        "content": "$1",
+        "example": "Failed to fetch"
+      }
+    }
+  },
+  "extensionReloaded": {
+    "message": "扩展已重新加载。请重试。",
+    "description": "Extension context invalidated"
+  },
+  "cannotAccessPage": {
+    "message": "无法访问页面。请先刷新页面重试。",
+    "description": "Tab access error"
+  },
+  "noContentToSummarize": {
+    "message": "此页面无内容可摘要。",
+    "description": "Empty page error"
+  },
+  "retry": {
+    "message": "重试",
+    "description": "Retry button text"
+  },
+  "settings": {
+    "message": "设置",
+    "description": "Settings link text"
+  },
+  "tagline": {
+    "message": "智能阅读助手",
+    "description": "Extension tagline"
+  },
+  "gettingExplanation": {
+    "message": "正在获取解释...",
+    "description": "Loading state for text explanation"
+  },
+  "selectionTooShort": {
+    "message": "选中文本过短。请选择更多文字。",
+    "description": "Error when selection is less than 5 characters"
+  },
+  "explainButton": {
+    "message": "AI解释",
+    "description": "Floating button text"
+  },
+  "apiKeyLabel": {
+    "message": "DeepSeek API密钥",
+    "description": "API key input label"
+  },
+  "apiKeyPlaceholder": {
+    "message": "输入您的DeepSeek API密钥",
+    "description": "API key input placeholder"
+  },
+  "apiBaseUrlLabel": {
+    "message": "API地址",
+    "description": "API URL input label"
+  },
+  "maxTokensLabel": {
+    "message": "最大Token数",
+    "description": "Max tokens slider label"
+  },
+  "saveAndTest": {
+    "message": "保存并测试",
+    "description": "Save and test button"
+  },
+  "resetToDefault": {
+    "message": "恢复默认",
+    "description": "Reset button"
+  },
+  "settingsSaved": {
+    "message": "设置已保存，连接验证成功！",
+    "description": "Success message after saving"
+  },
+  "settingsReset": {
+    "message": "设置已恢复默认",
+    "description": "Reset success message"
+  },
+  "pleaseEnterApiKey": {
+    "message": "请输入API密钥",
+    "description": "Validation error"
+  },
+  "invalidUrlFormat": {
+    "message": "URL格式无效",
+    "description": "URL validation error"
+  },
+  "connectionFailed": {
+    "message": "连接失败：$ERROR_MESSAGE$",
+    "description": "Connection test failed",
+    "placeholders": {
+      "error_message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "howToGetApiKey": {
+    "message": "获取API密钥方法：",
+    "description": "Instructions header"
+  },
+  "apiKeyInstructions": {
+    "message": "1. 访问 DeepSeek 平台\n2. 创建账号或登录\n3. 进入 API密钥 页面\n4. 创建新密钥并复制到这里",
+    "description": "API key instructions"
+  },
+  "apiConfiguration": {
+    "message": "API配置",
+    "description": "Settings section title"
+  },
+  "settingsTitle": {
+    "message": "ReadPilot 设置",
+    "description": "Settings page title"
+  },
+  "settingsHeader": {
+    "message": "ReadPilot 设置",
+    "description": "Settings header"
+  },
+  "deepSeekPlatform": {
+    "message": "DeepSeek 平台",
+    "description": "DeepSeek platform link text"
+  },
+  "createAccount": {
+    "message": "创建账号或登录",
+    "description": "Step to create account"
+  },
+  "navigateToApiKeys": {
+    "message": "进入 API密钥 页面",
+    "description": "Step to navigate to API keys"
+  },
+  "copyApiKey": {
+    "message": "创建新密钥并复制到这里",
+    "description": "Step to copy API key"
+  },
+  "enterApiKey": {
+    "message": "请输入API密钥",
+    "description": "Validation message when API key is empty"
+  },
+  "rateLimitHit": {
+    "message": "请求频率超限。请稍后重试。",
+    "description": "Rate limit error message"
+  },
+  "networkError": {
+    "message": "网络错误。请检查网络连接。",
+    "description": "Network error message"
+  },
+  "unableToGenerateExplanation": {
+    "message": "无法生成解释。",
+    "description": "Fallback message when explanation generation fails"
+  }
+}
