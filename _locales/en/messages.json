@@ -192,5 +192,97 @@
   "unableToGenerateExplanation": {
     "message": "Unable to generate explanation.",
     "description": "Fallback message when explanation generation fails"
+  },
+  "templateSection": {
+    "message": "Summary Templates",
+    "description": "Template section header"
+  },
+  "defaultTemplate": {
+    "message": "Default Template",
+    "description": "Default template selection label"
+  },
+  "customTemplates": {
+    "message": "Custom Templates",
+    "description": "Custom templates section header"
+  },
+  "addCustomTemplate": {
+    "message": "Add Custom Template",
+    "description": "Add custom template button"
+  },
+  "edit": {
+    "message": "Edit",
+    "description": "Edit button"
+  },
+  "delete": {
+    "message": "Delete",
+    "description": "Delete button"
+  },
+  "reset": {
+    "message": "Reset",
+    "description": "Reset button"
+  },
+  "save": {
+    "message": "Save",
+    "description": "Save button"
+  },
+  "cancel": {
+    "message": "Cancel",
+    "description": "Cancel button"
+  },
+  "templateName": {
+    "message": "Template Name",
+    "description": "Template name label"
+  },
+  "promptContent": {
+    "message": "Prompt",
+    "description": "Prompt content label"
+  },
+  "customTemplateLimit": {
+    "message": "Maximum 10 custom templates allowed",
+    "description": "Limit warning"
+  },
+  "templateDeleted": {
+    "message": "Template deleted",
+    "description": "Delete success message"
+  },
+  "templateSaved": {
+    "message": "Template saved",
+    "description": "Save success message"
+  },
+  "bulletSummaryName": {
+    "message": "Bullet Summary",
+    "description": "Bullet summary template name"
+  },
+  "bulletSummaryPrompt": {
+    "message": "You are a professional summarizer. Read the following article and write a concise summary in 3-5 bullet points. Focus on the main points and key takeaways. Language: match the input language.",
+    "description": "Bullet summary prompt"
+  },
+  "detailedSummaryName": {
+    "message": "Detailed Summary",
+    "description": "Detailed summary template name"
+  },
+  "detailedSummaryPrompt": {
+    "message": "You are a professional summarizer. Please write a detailed summary of 100-200 words covering the main topic, key arguments, and conclusions. Language: match the input language.",
+    "description": "Detailed summary prompt"
+  },
+  "keyTakeawaysName": {
+    "message": "Key Takeaways",
+    "description": "Key takeaways template name"
+  },
+  "keyTakeawaysPrompt": {
+    "message": "You are a professional reading assistant. From the following article, extract: 1) What is the main topic 2) The 3 most important points or findings 3) Conclusions or recommendations. Language: match the input language.",
+    "description": "Key takeaways prompt"
+  },
+  "plainEnglishName": {
+    "message": "Plain English",
+    "description": "Plain English template name"
+  },
+  "plainEnglishPrompt": {
+    "message": "You are a professional summarizer. Explain the core content of the following article in plain, easy-to-understand language. Assume the reader knows nothing about this topic. Avoid or explain technical jargon. Language: match the input language.",
+    "description": "Plain English prompt"
+  },
+  "selectTemplate": {
+    "message": "Select Template",
+    "description": "Template selector label in popup"
   }
 }

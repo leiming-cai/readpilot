@@ -192,5 +192,97 @@
   "unableToGenerateExplanation": {
     "message": "无法生成解释。",
     "description": "Fallback message when explanation generation fails"
+  },
+  "templateSection": {
+    "message": "摘要模板",
+    "description": "Template section header"
+  },
+  "defaultTemplate": {
+    "message": "默认模板",
+    "description": "Default template selection label"
+  },
+  "customTemplates": {
+    "message": "自定义模板",
+    "description": "Custom templates section header"
+  },
+  "addCustomTemplate": {
+    "message": "添加自定义模板",
+    "description": "Add custom template button"
+  },
+  "edit": {
+    "message": "编辑",
+    "description": "Edit button"
+  },
+  "delete": {
+    "message": "删除",
+    "description": "Delete button"
+  },
+  "reset": {
+    "message": "重置",
+    "description": "Reset button"
+  },
+  "save": {
+    "message": "保存",
+    "description": "Save button"
+  },
+  "cancel": {
+    "message": "取消",
+    "description": "Cancel button"
+  },
+  "templateName": {
+    "message": "模板名称",
+    "description": "Template name label"
+  },
+  "promptContent": {
+    "message": "提示词",
+    "description": "Prompt content label"
+  },
+  "customTemplateLimit": {
+    "message": "最多支持10个自定义模板",
+    "description": "Limit warning"
+  },
+  "templateDeleted": {
+    "message": "模板已删除",
+    "description": "Delete success message"
+  },
+  "templateSaved": {
+    "message": "模板已保存",
+    "description": "Save success message"
+  },
+  "bulletSummaryName": {
+    "message": "简洁要点",
+    "description": "Bullet summary template name"
+  },
+  "bulletSummaryPrompt": {
+    "message": "你是一个专业的摘要助手。阅读以下文章，用3-5个简洁的要点总结核心内容。每个要点一句话。语言与原文一致。",
+    "description": "Bullet summary prompt"
+  },
+  "detailedSummaryName": {
+    "message": "段落详摘",
+    "description": "Detailed summary template name"
+  },
+  "detailedSummaryPrompt": {
+    "message": "你是一个专业的摘要助手。请为以下文章写一段100-200字的详细摘要，包含文章的核心主题、主要论点和结论。语言与原文一致。",
+    "description": "Detailed summary prompt"
+  },
+  "keyTakeawaysName": {
+    "message": "关键信息",
+    "description": "Key takeaways template name"
+  },
+  "keyTakeawaysPrompt": {
+    "message": "你是一个专业的阅读助手。从以下文章中提取：1) 文章主题是什么 2) 最重要的3个观点或发现 3) 结论或建议。语言与原文一致。",
+    "description": "Key takeaways prompt"
+  },
+  "plainEnglishName": {
+    "message": "通俗解释",
+    "description": "Plain English template name"
+  },
+  "plainEnglishPrompt": {
+    "message": "你是一个专业的摘要助手。用通俗易懂的语言解释以下文章的核心内容。假设读者对该主题一无所知。避免使用专业术语或解释术语。语言与原文一致。",
+    "description": "Plain English prompt"
+  },
+  "selectTemplate": {
+    "message": "选择模板",
+    "description": "Template selector label in popup"
   }
 }
