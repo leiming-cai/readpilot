@@ -43,15 +43,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-      // Use message passing to get content from content script
-      const response = await chrome.tabs.sendMessage(tab.id, { action: 'extractContent' });
-      
-      if (!response || !response.content) {
+      if (!tab || !tab.id) {
+        showError('Cannot access current tab. Please try again.');
+        return;
+      }
+
+      // Use chrome.scripting.executeScript to extract content directly
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: extractMainContent
+      });
+
+      if (!results || !results[0] || !results[0].result) {
         showState(emptyState);
         return;
       }
 
-      const { content } = response;
+      const content = results[0].result;
 
       if (content.trim().length === 0) {
         showState(emptyState);
@@ -108,10 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
       showState(summaryOutput);
     } catch (error) {
       console.error('Summarize error:', error);
-      if (error.message?.includes('Extension context invalidated')) {
+      const errorMsg = error.message || '';
+      if (errorMsg.includes('Extension context invalidated') || errorMsg.includes('no reason')) {
         showError('Extension reloaded. Please try again.', false);
+      } else if (errorMsg.includes('Cannot access')) {
+        showError('Cannot access page. Try reloading the page first.', true);
       } else {
-        showError(`Connection error: ${error.message || 'Unknown error'}`, true);
+        showError(`Error: ${errorMsg || 'Unknown error'}`, true);
       }
     } finally {
       summarizeBtn.disabled = false;
@@ -121,3 +132,65 @@ document.addEventListener('DOMContentLoaded', () => {
   summarizeBtn.addEventListener('click', summarizePage);
   retryBtn.addEventListener('click', summarizePage);
 });
+
+// This function is injected and executed in the target page context
+function extractMainContent() {
+  const MAX_CHARS = 5000;
+  const unwantedTags = ['script', 'style', 'nav', 'footer', 'aside', 'iframe', 'img', 'figure', 'noscript', 'svg', 'button', 'input', 'textarea', 'select'];
+
+  function cloneAndClean(element) {
+    const clone = element.cloneNode(true);
+    unwantedTags.forEach(tag => {
+      const elements = clone.querySelectorAll(tag);
+      elements.forEach(el => el.remove());
+    });
+    ['onclick', 'onload', 'onerror', 'onmouseover'].forEach(attr => {
+      clone.querySelectorAll(`[${attr}]`).forEach(el => el.removeAttribute(attr));
+    });
+    return clone;
+  }
+
+  function getTextContent(element) {
+    const clone = cloneAndClean(element);
+    return clone.textContent || '';
+  }
+
+  let mainElement = document.querySelector('article') || 
+                    document.querySelector('main') || 
+                    document.querySelector('[role="main"]') ||
+                    document.querySelector('.post-content') ||
+                    document.querySelector('.article-content') ||
+                    document.querySelector('.entry-content') ||
+                    document.querySelector('#content') ||
+                    document.body;
+
+  let bestElement = mainElement;
+  let maxParagraphs = 0;
+
+  const containers = document.querySelectorAll('div, section, article');
+  containers.forEach(container => {
+    const paragraphs = container.querySelectorAll('p').length;
+    if (paragraphs > maxParagraphs) {
+      maxParagraphs = paragraphs;
+      bestElement = container;
+    }
+  });
+
+  if (maxParagraphs > 0) {
+    mainElement = bestElement;
+  }
+
+  let text = getTextContent(mainElement);
+  text = text.replace(/\s+/g, ' ').trim();
+
+  if (text.length > MAX_CHARS) {
+    text = text.substring(0, MAX_CHARS);
+    const lastSpace = text.lastIndexOf(' ');
+    if (lastSpace > MAX_CHARS * 0.8) {
+      text = text.substring(0, lastSpace);
+    }
+    text += '...';
+  }
+
+  return text;
+}
