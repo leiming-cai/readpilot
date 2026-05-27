@@ -12,12 +12,13 @@
   const TOAST_ID = 'readpilot-explain-toast';
 
   const MAX_TOASTS = 3;
-  const TOAST_SPACING = 12;
+  const TOAST_SPACING = 16;
   const TOAST_BASE_TOP = 24;
-  const ESTIMATED_TOAST_HEIGHT = 80;
+  const ESTIMATED_TOAST_HEIGHT = 120;
 
-  let toastQueue = [];
-  let toastIdCounter = 0;
+let toastQueue = [];
+let toastIdCounter = 0;
+let loadingToastId = null; // Track loading toast ID
 
   let explainButton = null;
   let toastElement = null;
@@ -178,6 +179,11 @@
     const index = toastQueue.findIndex(t => t.id === toastId);
     if (index === -1) return;
 
+    // Clear loading toast reference if hiding loading toast
+    if (loadingToastId === toastId) {
+      loadingToastId = null;
+    }
+
     const toast = toastQueue[index];
     stopCountdownForToast(toast);
 
@@ -250,6 +256,12 @@
   }
 
   async function showToast(message, isError = false, showCountdown = true) {
+    // If showing result (non-loading) and there's a loading toast, remove it first
+    if (showCountdown && loadingToastId !== null) {
+      hideToast(loadingToastId);
+      loadingToastId = null;
+    }
+
     // If queue full, remove oldest
     if (toastQueue.length >= MAX_TOASTS) {
       dequeueToast();
@@ -268,7 +280,10 @@
 
     // Hide countdown for loading state
     const countdownEl = toastElement.querySelector('.toast-countdown');
-    countdownEl.style.display = 'none';
+    if (!showCountdown) {
+      countdownEl.style.display = 'none';
+      loadingToastId = toastId; // Track this as loading toast
+    }
 
     // Add to DOM
     document.body.appendChild(toastElement);
