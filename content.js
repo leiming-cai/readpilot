@@ -12,6 +12,7 @@
 
   let explainButton = null;
   let toastElement = null;
+  let savedSelection = null; // Save selection when button is shown
 
   function createExplainButton() {
     const button = document.createElement('div');
@@ -48,13 +49,12 @@
 
     // Add click listener immediately when button is created
     button.addEventListener('click', () => {
-      console.log('ReadPilot button clicked');
-      const selection = window.getSelection();
-      const selectedText = selection?.toString().trim();
-      console.log('ReadPilot selected text:', selectedText);
-      if (selectedText) {
+      console.log('ReadPilot button clicked, savedSelection:', savedSelection);
+      if (savedSelection) {
+        const textToExplain = savedSelection;
+        savedSelection = null; // Clear after use
         hideButton();
-        handleExplain(selectedText);
+        handleExplain(textToExplain);
       }
     });
 
@@ -218,6 +218,7 @@
   }
 
   function hideButton() {
+    savedSelection = null;
     if (explainButton) {
       explainButton.style.opacity = '0';
       explainButton.style.transform = 'translateY(4px)';
@@ -243,10 +244,12 @@
       const selectedText = selection?.toString().trim();
 
       if (selectedText && selectedText.length >= MIN_SELECTION_LENGTH) {
+        savedSelection = selectedText; // Save for later use
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
         showButton(rect.left, rect.top);
       } else {
+        savedSelection = null;
         hideButton();
       }
     }, 10);
