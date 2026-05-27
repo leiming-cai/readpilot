@@ -48,8 +48,10 @@
 
     // Add click listener immediately when button is created
     button.addEventListener('click', () => {
+      console.log('ReadPilot button clicked');
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
+      console.log('ReadPilot selected text:', selectedText);
       if (selectedText) {
         hideButton();
         handleExplain(selectedText);
@@ -118,12 +120,14 @@
   }
 
   async function handleExplain(selectedText) {
+    console.log('ReadPilot handleExplain called with:', selectedText?.substring(0, 50));
     if (!selectedText || selectedText.trim().length < MIN_SELECTION_LENGTH) {
       showToast(getMessage('selectionTooShort'), true);
       return;
     }
 
     const settings = await getApiSettings();
+    console.log('ReadPilot settings:', settings);
 
     if (!settings.apiKey) {
       showToast(getMessage('apiKeyNotConfigured'), true);
