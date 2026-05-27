@@ -162,9 +162,13 @@ let loadingToastId = null; // Track loading toast ID
   }
 
   function positionToasts() {
-    toastQueue.forEach((toast, index) => {
-      const top = getToastTopByIndex(index);
-      toast.element.style.top = `${top}px`;
+    let cumulativeTop = TOAST_BASE_TOP;
+    toastQueue.forEach((toast) => {
+      toast.element.style.top = `${cumulativeTop}px`;
+      // Get actual height after positioning (use offsetHeight)
+      const toastHeight = toast.element.offsetHeight || ESTIMATED_TOAST_HEIGHT;
+      toast.actualHeight = toastHeight;
+      cumulativeTop += toastHeight + TOAST_SPACING;
     });
   }
 
@@ -294,17 +298,22 @@ let loadingToastId = null; // Track loading toast ID
       element: toastElement,
       countdownInterval: null,
       remainingSeconds: TOAST_DURATION,
-      isError: isError
+      isError: isError,
+      actualHeight: ESTIMATED_TOAST_HEIGHT
     };
 
-    // Enqueue and position
+    // Enqueue and position (initial position with estimated height)
     toastQueue.push(toastData);
     positionToasts();
 
-    // Show animation
+    // Show animation and then re-position with actual height
     requestAnimationFrame(() => {
       toastElement.style.transform = 'translateX(0)';
       toastElement.style.opacity = '1';
+      // Re-position after toast is rendered to get actual height
+      requestAnimationFrame(() => {
+        positionToasts();
+      });
     });
 
     // Start countdown if needed
