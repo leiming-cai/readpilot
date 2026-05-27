@@ -11,8 +11,13 @@
   const BUTTON_ID = 'readpilot-explain-btn';
   const TOAST_ID = 'readpilot-explain-toast';
 
-  let toastCountdownInterval = null;
-  let toastRemainingSeconds = TOAST_DURATION;
+  const MAX_TOASTS = 3;
+  const TOAST_SPACING = 12;
+  const TOAST_BASE_TOP = 24;
+  const ESTIMATED_TOAST_HEIGHT = 80;
+
+  let toastQueue = [];
+  let toastIdCounter = 0;
 
   let explainButton = null;
   let toastElement = null;
@@ -66,12 +71,12 @@
     return button;
   }
 
-  function createToast() {
+  function createToastElement(toastId) {
     const toast = document.createElement('div');
-    toast.id = TOAST_ID;
+    toast.id = TOAST_ID + '-' + toastId;
     toast.style.cssText = `
       position: fixed;
-      top: 24px;
+      top: 0;
       right: 24px;
       transform: translateX(120%);
       max-width: 360px;
@@ -141,55 +146,94 @@
 
     // Close button handler
     toast.querySelector('.toast-close').addEventListener('click', () => {
-      hideToast();
+      hideToast(toastId);
     });
 
-    document.body.appendChild(toast);
     return toast;
   }
 
-  function hideToast() {
-    if (toastElement) {
-      stopCountdown();
-      toastElement.style.transform = 'translateX(120%)';
-      toastElement.style.opacity = '0';
-      setTimeout(() => {
-        if (toastElement) {
-          toastElement.style.display = 'none';
-        }
-      }, 300);
+  function generateToastId() {
+    return ++toastIdCounter;
+  }
+
+  function getToastTopByIndex(index) {
+    return TOAST_BASE_TOP + index * (ESTIMATED_TOAST_HEIGHT + TOAST_SPACING);
+  }
+
+  function positionToasts() {
+    toastQueue.forEach((toast, index) => {
+      const top = getToastTopByIndex(index);
+      toast.element.style.top = `${top}px`;
+    });
+  }
+
+  function stopCountdownForToast(toast) {
+    if (toast.countdownInterval) {
+      clearInterval(toast.countdownInterval);
+      toast.countdownInterval = null;
     }
   }
 
-  function startCountdown(seconds, onComplete) {
-    stopCountdown();
-    toastRemainingSeconds = seconds;
-    updateCountdownDisplay();
+  function hideToast(toastId) {
+    const index = toastQueue.findIndex(t => t.id === toastId);
+    if (index === -1) return;
 
-    toastCountdownInterval = setInterval(() => {
-      toastRemainingSeconds--;
-      updateCountdownDisplay();
+    const toast = toastQueue[index];
+    stopCountdownForToast(toast);
 
-      if (toastRemainingSeconds <= 0) {
-        stopCountdown();
-        if (onComplete) onComplete();
+    toast.element.style.transform = 'translateX(120%)';
+    toast.element.style.opacity = '0';
+
+    setTimeout(() => {
+      toast.element.remove();
+    }, 300);
+
+    toastQueue.splice(index, 1);
+    positionToasts();
+  }
+
+  function dequeueToast() {
+    if (toastQueue.length === 0) return;
+
+    const oldest = toastQueue.shift();
+    stopCountdownForToast(oldest);
+
+    oldest.element.style.transform = 'translateX(120%)';
+    oldest.element.style.opacity = '0';
+
+    setTimeout(() => {
+      oldest.element.remove();
+    }, 300);
+
+    positionToasts();
+  }
+
+  function hideAllToasts() {
+    while (toastQueue.length > 0) {
+      dequeueToast();
+    }
+  }
+
+  function startCountdownForToast(toastData) {
+    stopCountdownForToast(toastData);
+    toastData.remainingSeconds = TOAST_DURATION;
+    updateCountdownDisplayForToast(toastData);
+
+    toastData.countdownInterval = setInterval(() => {
+      toastData.remainingSeconds--;
+      updateCountdownDisplayForToast(toastData);
+
+      if (toastData.remainingSeconds <= 0) {
+        stopCountdownForToast(toastData);
+        hideToast(toastData.id);
       }
     }, 1000);
   }
 
-  function stopCountdown() {
-    if (toastCountdownInterval) {
-      clearInterval(toastCountdownInterval);
-      toastCountdownInterval = null;
-    }
-  }
-
-  function updateCountdownDisplay() {
-    if (toastElement) {
-      const countdownEl = toastElement.querySelector('.toast-countdown');
-      if (countdownEl && toastRemainingSeconds > 0) {
-        countdownEl.textContent = `${toastRemainingSeconds}s`;
-      }
+  function updateCountdownDisplayForToast(toastData) {
+    const countdownEl = toastData.element.querySelector('.toast-countdown');
+    if (countdownEl && toastData.remainingSeconds > 0) {
+      countdownEl.textContent = `${toastData.remainingSeconds}s`;
     }
   }
 
@@ -205,32 +249,55 @@
     });
   }
 
-  function showToast(message, isError = false, showCountdown = true) {
-    if (!toastElement) {
-      toastElement = createToast();
+  async function showToast(message, isError = false, showCountdown = true) {
+    // If queue full, remove oldest
+    if (toastQueue.length >= MAX_TOASTS) {
+      dequeueToast();
     }
 
+    // Generate ID and create toast element
+    const toastId = generateToastId();
+    const toastElement = createToastElement(toastId);
+
+    // Set content
+    const contentEl = toastElement.querySelector('.toast-content');
+    contentEl.textContent = message;
     toastElement.style.background = isError
       ? 'rgba(239, 68, 68, 0.95)'
       : 'rgba(15, 23, 42, 0.95)';
 
-    const contentEl = toastElement.querySelector('.toast-content');
+    // Hide countdown for loading state
     const countdownEl = toastElement.querySelector('.toast-countdown');
+    countdownEl.style.display = 'none';
 
-    contentEl.textContent = message;
+    // Add to DOM
+    document.body.appendChild(toastElement);
 
+    // Create toast data object
+    const toastData = {
+      id: toastId,
+      element: toastElement,
+      countdownInterval: null,
+      remainingSeconds: TOAST_DURATION,
+      isError: isError
+    };
+
+    // Enqueue and position
+    toastQueue.push(toastData);
+    positionToasts();
+
+    // Show animation
+    requestAnimationFrame(() => {
+      toastElement.style.transform = 'translateX(0)';
+      toastElement.style.opacity = '1';
+    });
+
+    // Start countdown if needed
     if (showCountdown && !isError) {
-      countdownEl.style.display = 'block';
-      startCountdown(TOAST_DURATION, () => {
-        hideToast();
-      });
-    } else {
-      countdownEl.style.display = 'none';
+      startCountdownForToast(toastData);
     }
 
-    toastElement.style.display = 'block';
-    toastElement.style.transform = 'translateX(0)';
-    toastElement.style.opacity = '1';
+    return toastId;
   }
 
   async function handleExplain(selectedText) {
@@ -382,7 +449,7 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       hideButton();
-      hideToast();
+      hideAllToasts();
     }
   });
 
