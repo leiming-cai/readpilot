@@ -45,6 +45,17 @@
       transition: opacity 0.2s ease, transform 0.2s ease;
       pointer-events: none;
     `;
+
+    // Add click listener immediately when button is created
+    button.addEventListener('click', () => {
+      const selection = window.getSelection();
+      const selectedText = selection?.toString().trim();
+      if (selectedText) {
+        hideButton();
+        handleExplain(selectedText);
+      }
+    });
+
     document.body.appendChild(button);
     return button;
   }
@@ -256,17 +267,6 @@
       }
     }
   });
-
-  if (explainButton) {
-    explainButton.addEventListener('click', () => {
-      const selection = window.getSelection();
-      const selectedText = selection?.toString().trim();
-      if (selectedText) {
-        hideButton();
-        handleExplain(selectedText);
-      }
-    });
-  }
 
   document.addEventListener('selectionchange', () => {
     const selection = window.getSelection();
