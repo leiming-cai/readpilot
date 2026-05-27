@@ -83,6 +83,10 @@
     "message": "正在获取解释...",
     "description": "Loading state for text explanation"
   },
+  "closeButton": {
+    "message": "关闭",
+    "description": "Close button tooltip"
+  },
   "selectionTooShort": {
     "message": "选中文本过短。请选择更多文字。",
     "description": "Error when selection is less than 5 characters"

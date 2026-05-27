@@ -83,6 +83,10 @@
     "message": "Getting explanation...",
     "description": "Loading state for text explanation"
   },
+  "closeButton": {
+    "message": "Close",
+    "description": "Close button tooltip"
+  },
   "selectionTooShort": {
     "message": "Selection too short. Please select more text.",
     "description": "Error when selection is less than 5 characters"
