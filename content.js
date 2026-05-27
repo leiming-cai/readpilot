@@ -1,6 +1,9 @@
 (function() {
   'use strict';
 
+  // Debug log
+  console.log('ReadPilot content script loaded');
+
   // i18n helper for content script
   function getMessage(key, substitutions) {
     return chrome.i18n.getMessage(key, substitutions) || key;
@@ -48,8 +51,10 @@
 
     // Add click listener immediately when button is created
     button.addEventListener('click', () => {
+      console.log('ReadPilot: button clicked!');
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
+      console.log('ReadPilot: selected text for explain:', selectedText?.substring(0, 50));
       if (selectedText) {
         hideButton();
         handleExplain(selectedText);
@@ -177,8 +182,11 @@
   }
 
   function showButton(x, y) {
+    console.log('ReadPilot showButton called:', x, y);
     if (!explainButton) {
+      console.log('ReadPilot: creating explain button');
       explainButton = createExplainButton();
+      console.log('ReadPilot: button created:', explainButton);
     }
 
     const buttonRect = explainButton.getBoundingClientRect();
@@ -229,6 +237,7 @@
   let hideTimeout = null;
 
   document.addEventListener('mouseup', (e) => {
+    console.log('ReadPilot: mouseup event fired');
     if (hideTimeout) {
       clearTimeout(hideTimeout);
       hideTimeout = null;
@@ -237,10 +246,12 @@
     setTimeout(() => {
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
+      console.log('ReadPilot: selectedText:', selectedText?.substring(0, 50));
 
       if (selectedText && selectedText.length >= MIN_SELECTION_LENGTH) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
+        console.log('ReadPilot: showing button at', rect.left, rect.top);
         showButton(rect.left, rect.top);
       } else {
         hideButton();
