@@ -7,8 +7,12 @@
   }
 
   const MIN_SELECTION_LENGTH = 5;
+  const TOAST_DURATION = 60; // seconds
   const BUTTON_ID = 'readpilot-explain-btn';
   const TOAST_ID = 'readpilot-explain-toast';
+
+  let toastCountdownInterval = null;
+  let toastRemainingSeconds = TOAST_DURATION;
 
   let explainButton = null;
   let toastElement = null;
@@ -67,9 +71,9 @@
     toast.id = TOAST_ID;
     toast.style.cssText = `
       position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
+      top: 24px;
+      right: 24px;
+      transform: translateX(120%);
       max-width: 360px;
       padding: 16px 20px;
       background: rgba(15, 23, 42, 0.95);
@@ -85,8 +89,108 @@
       opacity: 0;
       transition: transform 0.3s ease, opacity 0.3s ease;
     `;
+
+    toast.innerHTML = `
+      <div class="toast-header">
+        <span class="toast-countdown"></span>
+        <button class="toast-close">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="toast-content"></div>
+    `;
+
+    // Add header and content styling
+    const style = document.createElement('style');
+    style.textContent = `
+      .toast-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .toast-countdown {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 500;
+      }
+      .toast-close {
+        background: none;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: color 0.2s, background 0.2s;
+      }
+      .toast-close:hover {
+        color: #f1f5f9;
+        background: rgba(255,255,255,0.1);
+      }
+      .toast-content {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    `;
+    toast.appendChild(style);
+
+    // Close button handler
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+      hideToast();
+    });
+
     document.body.appendChild(toast);
     return toast;
+  }
+
+  function hideToast() {
+    if (toastElement) {
+      stopCountdown();
+      toastElement.style.transform = 'translateX(120%)';
+      toastElement.style.opacity = '0';
+      setTimeout(() => {
+        if (toastElement) {
+          toastElement.style.display = 'none';
+        }
+      }, 300);
+    }
+  }
+
+  function startCountdown(seconds, onComplete) {
+    stopCountdown();
+    toastRemainingSeconds = seconds;
+    updateCountdownDisplay();
+
+    toastCountdownInterval = setInterval(() => {
+      toastRemainingSeconds--;
+      updateCountdownDisplay();
+
+      if (toastRemainingSeconds <= 0) {
+        stopCountdown();
+        if (onComplete) onComplete();
+      }
+    }, 1000);
+  }
+
+  function stopCountdown() {
+    if (toastCountdownInterval) {
+      clearInterval(toastCountdownInterval);
+      toastCountdownInterval = null;
+    }
+  }
+
+  function updateCountdownDisplay() {
+    if (toastElement) {
+      const countdownEl = toastElement.querySelector('.toast-countdown');
+      if (countdownEl && toastRemainingSeconds > 0) {
+        countdownEl.textContent = `${toastRemainingSeconds}s`;
+      }
+    }
   }
 
   function getApiSettings() {
@@ -101,22 +205,32 @@
     });
   }
 
-  function showToast(message, isError = false) {
+  function showToast(message, isError = false, showCountdown = true) {
     if (!toastElement) {
       toastElement = createToast();
     }
 
-    toastElement.style.background = isError 
-      ? 'rgba(239, 68, 68, 0.95)' 
+    toastElement.style.background = isError
+      ? 'rgba(239, 68, 68, 0.95)'
       : 'rgba(15, 23, 42, 0.95)';
-    toastElement.textContent = message;
-    toastElement.style.transform = 'translateX(-50%) translateY(0)';
-    toastElement.style.opacity = '1';
 
-    setTimeout(() => {
-      toastElement.style.transform = 'translateX(-50%) translateY(100px)';
-      toastElement.style.opacity = '0';
-    }, 4000);
+    const contentEl = toastElement.querySelector('.toast-content');
+    const countdownEl = toastElement.querySelector('.toast-countdown');
+
+    contentEl.textContent = message;
+
+    if (showCountdown && !isError) {
+      countdownEl.style.display = 'block';
+      startCountdown(TOAST_DURATION, () => {
+        hideToast();
+      });
+    } else {
+      countdownEl.style.display = 'none';
+    }
+
+    toastElement.style.display = 'block';
+    toastElement.style.transform = 'translateX(0)';
+    toastElement.style.opacity = '1';
   }
 
   async function handleExplain(selectedText) {
@@ -134,7 +248,7 @@
       return;
     }
 
-    showToast(getMessage('gettingExplanation'));
+    showToast(getMessage('gettingExplanation'), false, false); // loading state, no countdown
 
     try {
       const response = await fetch(`${settings.apiBaseUrl}/chat/completions`, {
@@ -268,10 +382,9 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       hideButton();
-      if (toastElement) {
-        toastElement.style.transform = 'translateX(-50%) translateY(100px)';
-        toastElement.style.opacity = '0';
-      }
+      hideToast();
+    }
+  });
     }
   });
 
