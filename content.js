@@ -385,8 +385,6 @@
       hideToast();
     }
   });
-    }
-  });
 
   document.addEventListener('selectionchange', () => {
     const selection = window.getSelection();
