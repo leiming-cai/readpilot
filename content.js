@@ -105,7 +105,18 @@ let loadingToastId = null; // Track loading toast ID
           </svg>
         </button>
       </div>
-      <div class="toast-content"></div>
+      <div class="toast-body">
+        <div class="toast-content"></div>
+        <button class="toast-copy" title="Copy">
+          <svg class="icon-copy" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M2 10V3a1 1 0 011-1h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon-check" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none">
+            <path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
     `;
 
     // Add header and content styling
@@ -138,9 +149,42 @@ let loadingToastId = null; // Track loading toast ID
         color: #f1f5f9;
         background: rgba(255,255,255,0.1);
       }
+      .toast-body {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
       .toast-content {
+        flex: 1;
         white-space: pre-wrap;
         word-wrap: break-word;
+      }
+      .toast-copy {
+        background: none;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: color 0.2s, background 0.2s;
+        flex-shrink: 0;
+      }
+      .toast-copy:hover {
+        color: #f1f5f9;
+        background: rgba(255,255,255,0.1);
+      }
+      .toast-copy .icon-check {
+        display: none;
+      }
+      .toast-copy.copied .icon-copy {
+        display: none;
+      }
+      .toast-copy.copied .icon-check {
+        display: block;
+        color: #22c55e;
       }
     `;
     toast.appendChild(style);
@@ -148,6 +192,21 @@ let loadingToastId = null; // Track loading toast ID
     // Close button handler
     toast.querySelector('.toast-close').addEventListener('click', () => {
       hideToast(toastId);
+    });
+
+    // Copy button handler
+    toast.querySelector('.toast-copy').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const content = toast.querySelector('.toast-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        const copyBtn = toast.querySelector('.toast-copy');
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.classList.remove('copied');
+        }, 1500);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
     });
 
     return toast;
