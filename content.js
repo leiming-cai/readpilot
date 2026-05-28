@@ -99,7 +99,7 @@ let loadingToastId = null; // Track loading toast ID
     toast.innerHTML = `
       <div class="toast-header">
         <span class="toast-countdown"></span>
-        <button class="toast-close">
+        <button class="toast-close" title="${getMessage('closeButton')}">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
@@ -117,7 +117,7 @@ let loadingToastId = null; // Track loading toast ID
           </svg>
         </button>
       </div>
-      <a class="toast-settings-link" href="#" target="_blank" style="pointer-events: auto;">
+      <a class="toast-settings-link" href="#" target="_blank" style="pointer-events: auto;" title="${getMessage('goToSettings')}">
         <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
           <path d="M16.5 10a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" stroke="currentColor" stroke-width="1.5"/>
