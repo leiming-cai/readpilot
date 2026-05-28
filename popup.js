@@ -395,33 +395,56 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await apiResponse.json();
       const aiContent = data.choices?.[0]?.message?.content || '';
 
+      // Debug: log raw AI content
+      console.log('AI Raw Response:', aiContent);
+
       // Parse JSON response - try multiple extraction strategies
       let answerData = { questions: [] };
       try {
-        // Strategy 1: Try direct JSON parse first
+        // Strip markdown code blocks if present
+        let cleanedContent = aiContent.trim();
+        const codeBlockMatch = cleanedContent.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch && codeBlockMatch[1]) {
+          cleanedContent = codeBlockMatch[1].trim();
+        }
+
+        // Strategy 1: Try direct JSON parse
         try {
-          answerData = JSON.parse(aiContent);
+          answerData = JSON.parse(cleanedContent);
         } catch (e1) {
-          // Strategy 2: Try to find JSON object with balanced braces
-          const firstBrace = aiContent.indexOf('{');
-          if (firstBrace !== -1) {
-            let depth = 0;
-            let endPos = firstBrace;
-            for (let i = firstBrace; i < aiContent.length; i++) {
-              if (aiContent[i] === '{') depth++;
-              else if (aiContent[i] === '}') {
-                depth--;
-                if (depth === 0) {
-                  endPos = i + 1;
-                  break;
+          // Strategy 2: Try to find "questions" array within the content
+          const questionsMatch = cleanedContent.match(/"questions"\s*:\s*\[([\s\S]*?)\]/);
+          if (questionsMatch) {
+            const questionsArrayStr = '[' + questionsMatch[1] + ']';
+            try {
+              const parsedQuestions = JSON.parse(questionsArrayStr);
+              // Validate it's an array of objects with question/answer
+              if (Array.isArray(parsedQuestions)) {
+                answerData.questions = parsedQuestions.filter(q => q.question && q.answer);
+              }
+            } catch (e2) {
+              // Strategy 3: Find first { and match to end
+              const firstBrace = cleanedContent.indexOf('{');
+              if (firstBrace !== -1) {
+                let depth = 0;
+                let endPos = firstBrace;
+                for (let i = firstBrace; i < cleanedContent.length; i++) {
+                  if (cleanedContent[i] === '{') depth++;
+                  else if (cleanedContent[i] === '}') {
+                    depth--;
+                    if (depth === 0) {
+                      endPos = i + 1;
+                      break;
+                    }
+                  }
+                }
+                const jsonStr = cleanedContent.substring(firstBrace, endPos);
+                try {
+                  answerData = JSON.parse(jsonStr);
+                } catch (e3) {
+                  console.error('Failed to parse JSON after all strategies:', e3);
                 }
               }
-            }
-            const jsonStr = aiContent.substring(firstBrace, endPos);
-            try {
-              answerData = JSON.parse(jsonStr);
-            } catch (e2) {
-              console.error('Failed to parse extracted JSON:', e2);
             }
           }
         }
