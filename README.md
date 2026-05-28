@@ -5,7 +5,7 @@
 ## 功能特性
 
 ### 📄 页面摘要
-- 点击扩展图标 → 弹出窗口 → 选择摘要模板 → 点击 **"Summarize Page"** 按钮
+- 点击扩展图标 → 选择摘要模板 → 点击 **"摘要页面"** 按钮
 - 支持4种内置摘要模板 + 自定义模板
   - **简洁要点**：3-5个bullet points概括要点
   - **段落详摘**：段落式详细总结
@@ -15,8 +15,8 @@
 
 ### ✍️ 文本解释
 - 选中任意文字（≥5字符）
-- 页面显示悬浮 **"AI Explain"** 按钮
-- 点击获取 AI 解释，支持技术术语和概念说明
+- 页面显示悬浮 **"AI 解释"** 按钮
+- 点击获取 AI 解释，60秒倒计时
 - 支持最多 **3个 Toast 同时显示**，堆叠展示
 - 每个解释 Toast 可一键 **复制内容**
 
@@ -27,8 +27,6 @@
 - 保存时自动测试连接
 
 ## Toast 交互
-
-解释功能支持多 Toast 堆叠显示：
 
 | 操作 | 行为 |
 |------|------|
@@ -46,9 +44,9 @@
 ### 第一步：配置 API Key
 
 1. 点击浏览器右上角扩展图标
-2. 点击 **Settings**（设置）图标，进入设置页面
+2. 点击 **设置** 图标，进入设置页面
 3. 输入您的 [DeepSeek API Key](https://platform.deepseek.com)
-4. 点击 **Save & Test** 保存并验证连接
+4. 点击 **保存并测试** 验证连接
 
 > 💡 没有 API Key？访问 [DeepSeek 平台](https://platform.deepseek.com) 注册账号后在 API Keys 页面创建。
 
@@ -57,16 +55,16 @@
 1. 打开任意网页
 2. 点击扩展图标
 3. 选择摘要模板（可选）
-4. 点击 **Summarize Page**
+4. 点击 **摘要页面**
 5. 等待摘要生成，点击复制按钮一键复制
 
 ### 第三步：使用文本解释
 
 1. 在网页中选中任意文字（至少5个字符）
-2. 页面会显示 **"AI Explain"** 悬浮按钮
+2. 页面会显示 **"AI 解释"** 悬浮按钮
 3. 点击按钮获取 AI 解释
 4. 可点击复制按钮复制解释内容
-5. 多个解释会堆叠显示
+5. 多个解释会自动堆叠显示
 
 ### 常见问题
 
@@ -77,10 +75,12 @@
 | 解释显示很慢 | 网络延迟或 API 限速，请稍后重试 |
 | Toast 遮盖内容 | 点击关闭按钮或等待 60s 自动关闭 |
 
+## 技术架构
+
 ```
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────┐
 │   popup.js      │─────▶│  content.js     │─────▶│ DeepSeek   │
-│  (摘要逻辑)      │      │  (内容提取)      │      │ API        │
+│  (摘要界面)      │      │  (内容提取)      │      │ API        │
 └─────────────────┘      └─────────────────┘      └─────────────┘
         │                        │
         ▼                        ▼
@@ -97,12 +97,12 @@ ReadPilot/
 ├── manifest.json      # Manifest V3 配置
 ├── popup.html        # 弹窗界面
 ├── popup.css         # 样式（含深色/浅色模式）
-├── popup.js          # 页面摘要逻辑
-├── content.js        # 内容脚本（选中文本检测、悬浮按钮、Toast）
+├── popup.js          # 弹窗逻辑
+├── content.js        # 内容脚本（划词检测、Toast）
 ├── options.html      # 设置页面
-├── options.js        # API 配置管理
+├── options.js        # 设置逻辑
 ├── background.js     # 服务工作者
-├── _locales/          # 国际化文件
+├── _locales/        # 国际化文件
 │   ├── en/
 │   │   └── messages.json
 │   └── zh_CN/
@@ -124,11 +124,6 @@ ReadPilot/
 | `_locales/en/messages.json` | English |
 | `_locales/zh_CN/messages.json` | 中文 |
 
-如需添加更多语言：
-1. 在 `_locales/` 下创建对应语言目录（如 `ja/`、`ko/`）
-2. 添加 `messages.json` 文件
-3. 在 `manifest.json` 中添加对应 `default_locale`
-
 ## 安装方法
 
 1. 打开 `chrome://extensions/`
@@ -138,16 +133,16 @@ ReadPilot/
 
 ## 配置说明
 
-1. 点击扩展图标 → **Settings** 打开设置页面
+1. 点击扩展图标 → **设置**
 2. 输入您的 [DeepSeek API Key](https://platform.deepseek.com)
 3. 可选：调整 API 地址和 Max Tokens
-4. 点击 **Save & Test** 保存并测试连接
+4. 点击 **保存并测试** 保存并验证连接
 
 ## API 配置
 
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
-| API Base URL | `https://api.deepseek.com` | DeepSeek API 地址 |
+| API 地址 | `https://api.deepseek.com` | DeepSeek API 地址 |
 | Max Tokens | 1000 | 摘要最大 token 数 |
 
 ## 错误处理
@@ -159,14 +154,6 @@ ReadPilot/
 | 网络错误 | 显示连接错误和重试 |
 | 空白页面 | 提示"无内容可摘要" |
 | 选中文本过短 | 提示"请选择更多文本" |
-
-## DeepSeek API 集成
-
-- **端点**: `POST /chat/completions`
-- **模型**: `deepseek-chat`
-- **Temperature**: 0.7
-- **摘要 Max Tokens**: 1000
-- **解释 Max Tokens**: 500
 
 ## 隐私说明
 
