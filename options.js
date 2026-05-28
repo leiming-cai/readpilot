@@ -104,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const apiKeyInput = document.getElementById('apiKey');
   const apiBaseUrlInput = document.getElementById('apiBaseUrl');
+  const apiProviderInput = document.getElementById('apiProvider');
+  const customUrlGroup = document.getElementById('customUrlGroup');
   const maxTokensSlider = document.getElementById('maxTokens');
   const maxTokensValue = document.getElementById('maxTokensValue');
   const saveBtn = document.getElementById('saveBtn');
@@ -114,8 +116,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorIcon = document.querySelector('.error-x');
   const spinner = document.querySelector('.spinner');
 
+  // Provider selection handler
+  apiProviderInput.addEventListener('change', () => {
+    selectedProvider = apiProviderInput.value;
+    if (selectedProvider === 'custom') {
+      customUrlGroup.classList.remove('hidden-group');
+      apiBaseUrlInput.value = '';
+      apiBaseUrlInput.focus();
+    } else {
+      customUrlGroup.classList.add('hidden-group');
+      apiBaseUrlInput.value = API_PROVIDERS[selectedProvider].url;
+    }
+  });
+
   const DEFAULT_BASE_URL = 'https://api.deepseek.com';
   const DEFAULT_MAX_TOKENS = 1000;
+
+  // API Provider presets
+  const API_PROVIDERS = {
+    deepseek: { url: 'https://api.deepseek.com', name: 'DeepSeek' },
+    openai: { url: 'https://api.openai.com/v1', name: 'OpenAI' },
+    anthropic: { url: 'https://api.anthropic.com', name: 'Anthropic' },
+    custom: { url: '', name: 'Custom' }
+  };
+
+  let selectedProvider = 'deepseek';
 
   // Show status message
   function showStatus(message, isError) {
@@ -137,9 +162,29 @@ document.addEventListener('DOMContentLoaded', () => {
   function loadSettings() {
     chrome.storage.local.get(['apiKey', 'apiBaseUrl', 'maxTokens'], (result) => {
       apiKeyInput.value = result.apiKey || '';
-      apiBaseUrlInput.value = result.apiBaseUrl || DEFAULT_BASE_URL;
       maxTokensSlider.value = result.maxTokens || DEFAULT_MAX_TOKENS;
       maxTokensValue.textContent = result.maxTokens || DEFAULT_MAX_TOKENS;
+
+      // Detect provider from URL
+      const savedUrl = result.apiBaseUrl || DEFAULT_BASE_URL;
+      let detectedProvider = 'custom';
+      for (const [key, provider] of Object.entries(API_PROVIDERS)) {
+        if (key !== 'custom' && savedUrl.startsWith(provider.url)) {
+          detectedProvider = key;
+          break;
+        }
+      }
+
+      selectedProvider = detectedProvider;
+      apiProviderInput.value = detectedProvider;
+
+      if (detectedProvider === 'custom') {
+        customUrlGroup.classList.remove('hidden-group');
+        apiBaseUrlInput.value = savedUrl;
+      } else {
+        customUrlGroup.classList.add('hidden-group');
+        apiBaseUrlInput.value = API_PROVIDERS[detectedProvider].url;
+      }
     });
   }
 
@@ -375,7 +420,17 @@ document.addEventListener('DOMContentLoaded', () => {
     maxTokensValue.textContent = maxTokensSlider.value;
   });
 
-  async function testApiConnection(apiKey, baseUrl) {
+  async function testApiConnection(apiKey, baseUrl, provider = 'deepseek') {
+    // Model mapping by provider
+    const providerModels = {
+      deepseek: 'deepseek-chat',
+      openai: 'gpt-3.5-turbo',
+      anthropic: 'claude-3-haiku-20240307',
+      custom: 'deepseek-chat' // fallback for custom
+    };
+
+    const model = providerModels[provider] || 'deepseek-chat';
+
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -383,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: model,
         messages: [
           { role: 'user', content: 'Hi' }
         ],
@@ -401,7 +456,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function saveSettings() {
     const apiKey = apiKeyInput.value.trim();
-    const apiBaseUrl = apiBaseUrlInput.value.trim() || DEFAULT_BASE_URL;
+    let apiBaseUrl = apiBaseUrlInput.value.trim();
+
+    // Use provider preset URL if not custom
+    if (selectedProvider !== 'custom') {
+      apiBaseUrl = API_PROVIDERS[selectedProvider].url;
+    }
+
+    if (!apiBaseUrl) {
+      apiBaseUrl = DEFAULT_BASE_URL;
+    }
+
     const maxTokens = parseInt(maxTokensSlider.value, 10);
 
     if (!apiKey) {
@@ -417,12 +482,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setLoading(true);
 
     try {
-      await testApiConnection(apiKey, apiBaseUrl);
+      await testApiConnection(apiKey, apiBaseUrl, selectedProvider);
 
       chrome.storage.local.set({
         apiKey: apiKey,
         apiBaseUrl: apiBaseUrl,
-        maxTokens: maxTokens
+        maxTokens: maxTokens,
+        apiProvider: selectedProvider
       }, () => {
         showStatus(getMessage('settingsSaved'), false);
       });
@@ -443,11 +509,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetSettings() {
     apiKeyInput.value = '';
-    apiBaseUrlInput.value = DEFAULT_BASE_URL;
+    apiProviderInput.value = 'deepseek';
+    selectedProvider = 'deepseek';
+    customUrlGroup.classList.add('hidden-group');
+    apiBaseUrlInput.value = API_PROVIDERS.deepseek.url;
     maxTokensSlider.value = DEFAULT_MAX_TOKENS;
     maxTokensValue.textContent = DEFAULT_MAX_TOKENS;
 
-    chrome.storage.local.remove(['apiKey', 'apiBaseUrl', 'maxTokens'], () => {
+    chrome.storage.local.remove(['apiKey', 'apiBaseUrl', 'maxTokens', 'apiProvider'], () => {
       showStatus(getMessage('settingsReset'), false);
     });
   }

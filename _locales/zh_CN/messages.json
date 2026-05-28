@@ -304,5 +304,25 @@
   "goToSettings": {
     "message": "前往设置",
     "description": "Link to settings page"
+  },
+  "apiProvider": {
+    "message": "API 提供商",
+    "description": "API provider dropdown label"
+  },
+  "providerDeepSeek": {
+    "message": "DeepSeek",
+    "description": "DeepSeek provider option"
+  },
+  "providerOpenAI": {
+    "message": "OpenAI",
+    "description": "OpenAI provider option"
+  },
+  "providerAnthropic": {
+    "message": "Anthropic",
+    "description": "Anthropic provider option"
+  },
+  "providerCustom": {
+    "message": "自定义",
+    "description": "Custom provider option"
   }
 }

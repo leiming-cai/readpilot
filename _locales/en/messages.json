@@ -304,5 +304,25 @@
   "goToSettings": {
     "message": "Go to Settings",
     "description": "Link to settings page"
+  },
+  "apiProvider": {
+    "message": "API Provider",
+    "description": "API provider dropdown label"
+  },
+  "providerDeepSeek": {
+    "message": "DeepSeek",
+    "description": "DeepSeek provider option"
+  },
+  "providerOpenAI": {
+    "message": "OpenAI",
+    "description": "OpenAI provider option"
+  },
+  "providerAnthropic": {
+    "message": "Anthropic",
+    "description": "Anthropic provider option"
+  },
+  "providerCustom": {
+    "message": "Custom",
+    "description": "Custom provider option"
   }
 }
