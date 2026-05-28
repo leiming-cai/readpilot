@@ -1,5 +1,9 @@
 # ReadPilot - AI 智能阅读助手
 
+[English](./README_en.md) | [中文](./README.md)
+
+---
+
 一款基于 Chrome Manifest V3 的浏览器扩展，提供页面摘要和文本 AI 解释功能。
 
 ## 功能特性

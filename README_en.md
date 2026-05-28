@@ -1,5 +1,9 @@
 # ReadPilot - AI Reading Assistant
 
+[English](./README_en.md) | [中文](./README.md)
+
+---
+
 A Chrome Manifest V3 browser extension providing page summarization and AI-powered text explanation.
 
 ## Features
