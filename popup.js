@@ -131,6 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const emptyState = document.getElementById('emptyState');
   const copyBtn = document.getElementById('copyBtn');
   const settingsLink = document.getElementById('settingsLink');
+  const answerBtn = document.getElementById('answerBtn');
+  const answerLoadingState = document.getElementById('answerLoadingState');
 
   // Copy button handler
   if (copyBtn) {
@@ -157,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showState(state) {
     loadingState.classList.add('hidden');
+    answerLoadingState.classList.add('hidden');
     summaryOutput.classList.add('hidden');
     errorState.classList.add('hidden');
     emptyState.classList.add('hidden');
@@ -299,6 +302,130 @@ document.addEventListener('DOMContentLoaded', () => {
 
   summarizeBtn.addEventListener('click', summarizePage);
   retryBtn.addEventListener('click', summarizePage);
+
+  async function answerQuestions() {
+    showState(answerLoadingState);
+    answerBtn.disabled = true;
+
+    try {
+      const apiKey = await checkApiKey();
+      if (!apiKey) {
+        showError(getMessage('apiKeyNotConfigured'), false, true);
+        return;
+      }
+
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab || !tab.id) {
+        showError(getMessage('cannotAccessPage'));
+        return;
+      }
+
+      let results;
+      try {
+        results = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: extractMainContent
+        });
+      } catch (error) {
+        console.error('Script injection error:', error);
+        showError(getMessage('contentScriptNotReady'), true);
+        return;
+      }
+
+      if (!results || !results[0] || !results[0].result) {
+        showError(getMessage('noContentToSummarize'));
+        return;
+      }
+
+      const content = results[0].result;
+      if (content.trim().length === 0) {
+        showError(getMessage('noContentToSummarize'));
+        return;
+      }
+
+      const settings = await new Promise((resolve) => {
+        chrome.storage.local.get(['apiBaseUrl', 'apiProvider', 'maxTokens'], (result) => {
+          resolve({
+            apiBaseUrl: result.apiBaseUrl || 'https://api.deepseek.com',
+            apiProvider: result.apiProvider || 'deepseek',
+            maxTokens: result.maxTokens || 1000
+          });
+        });
+      });
+
+      const answerPrompt = `你是一个答题助手。请分析以下页面内容，找出所有题目（问句形式）并给出准确答案。
+返回格式为 JSON：
+{
+  "questions": [
+    {"question": "题目1", "answer": "答案1"},
+    {"question": "题目2", "answer": "答案2"}
+  ]
+}
+如果页面中没有题目，返回空的 questions 数组。
+只返回 JSON，不要有其他文字。`;
+
+      const apiResponse = await fetch(`${settings.apiBaseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: settings.apiProvider === 'openai' ? 'gpt-4' : 'deepseek-chat',
+          messages: [
+            { role: 'system', content: answerPrompt },
+            { role: 'user', content: content }
+          ],
+          max_tokens: settings.maxTokens,
+          temperature: 0.7
+        })
+      });
+
+      if (!apiResponse.ok) {
+        if (apiResponse.status === 429) {
+          showError(getMessage('apiRateLimit'), true);
+        } else if (apiResponse.status === 401) {
+          showError(getMessage('invalidApiKey'));
+        } else {
+          showError(getMessage('apiError', [apiResponse.status.toString()]), true);
+        }
+        return;
+      }
+
+      const data = await apiResponse.json();
+      const aiContent = data.choices?.[0]?.message?.content || '';
+
+      // Parse JSON response
+      let answerData;
+      try {
+        const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          answerData = JSON.parse(jsonMatch[0]);
+        } else {
+          answerData = { questions: [] };
+        }
+      } catch (e) {
+        console.error('Failed to parse answer JSON:', e);
+        answerData = { questions: [] };
+      }
+
+      // Send results to content script to display in side panel
+      if (tab.id) {
+        chrome.tabs.sendMessage(tab.id, {
+          type: 'SHOW_ANSWER_PANEL',
+          questions: answerData.questions || []
+        });
+      }
+
+    } catch (error) {
+      console.error('Answer questions error:', error);
+      showError(getMessage('connectionError', [error.message || 'Unknown error']), true);
+    } finally {
+      answerBtn.disabled = false;
+    }
+  }
+
+  answerBtn.addEventListener('click', answerQuestions);
 });
 
 // This function is injected and executed in the target page context
