@@ -379,7 +379,7 @@ let loadingToastId = null; // Track loading toast ID
     if (showSettingsLink) {
       settingsLink.addEventListener('click', (e) => {
         e.preventDefault();
-        chrome.runtime.openOptionsPage();
+        chrome.runtime.sendMessage({ action: 'openOptions' });
       });
       settingsLink.classList.add('show');
     }

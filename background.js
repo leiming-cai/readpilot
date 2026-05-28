@@ -16,6 +16,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch((error) => sendResponse({ error: error.message }));
     return true;
   }
+
+  if (request.action === 'openOptions') {
+    chrome.runtime.openOptionsPage();
+    return true;
+  }
 });
 
 async function handleSummarize({ content, apiKey, apiBaseUrl, maxTokens }) {
