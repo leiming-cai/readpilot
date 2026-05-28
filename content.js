@@ -117,7 +117,7 @@ let loadingToastId = null; // Track loading toast ID
           </svg>
         </button>
       </div>
-      <a class="toast-settings-link" href="#" target="_blank">
+      <a class="toast-settings-link" href="#" target="_blank" style="pointer-events: auto;">
         <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
           <path d="M16.5 10a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" stroke="currentColor" stroke-width="1.5"/>
@@ -377,7 +377,10 @@ let loadingToastId = null; // Track loading toast ID
     // Show/hide settings link
     const settingsLink = toastElement.querySelector('.toast-settings-link');
     if (showSettingsLink) {
-      settingsLink.href = chrome.runtime.getURL('options.html');
+      settingsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        chrome.runtime.openOptionsPage();
+      });
       settingsLink.classList.add('show');
     }
 
