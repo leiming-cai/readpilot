@@ -15,6 +15,8 @@
   const TOAST_SPACING = 16;
   const TOAST_BASE_TOP = 24;
   const ESTIMATED_TOAST_HEIGHT = 120;
+  const ANSWER_PANEL_ID = 'readpilot-answer-panel';
+  const ANSWER_PANEL_CLOSE_BTN_ID = 'readpilot-answer-panel-close';
 
 let toastQueue = [];
 let toastIdCounter = 0;
@@ -70,6 +72,149 @@ let loadingToastId = null; // Track loading toast ID
 
     document.body.appendChild(button);
     return button;
+  }
+
+  function createAnswerPanel() {
+    const panel = document.createElement('div');
+    panel.id = ANSWER_PANEL_ID;
+    panel.innerHTML = `
+      <div class="answer-panel-header">
+        <h3>${getMessage('answerResults')}</h3>
+        <button id="${ANSWER_PANEL_CLOSE_BTN_ID}" class="answer-panel-close" title="${getMessage('closePanel')}">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="answer-panel-content"></div>
+    `;
+    panel.style.cssText = `
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 360px;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.95);
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      z-index: 2147483647;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    `;
+
+    panel.querySelector('.answer-panel-header').style.cssText = `
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    `;
+
+    panel.querySelector('h3').style.cssText = `
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    `;
+
+    panel.querySelector('.answer-panel-close').style.cssText = `
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+
+    panel.querySelector('.answer-panel-close').addEventListener('click', () => {
+      closeAnswerPanel();
+    });
+
+    panel.querySelector('.answer-panel-content').style.cssText = `
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+    `;
+
+    document.body.appendChild(panel);
+    return panel;
+  }
+
+  function closeAnswerPanel() {
+    const panel = document.getElementById(ANSWER_PANEL_ID);
+    if (panel) {
+      panel.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        panel.remove();
+      }, 300);
+    }
+  }
+
+  function renderAnswerPanel(questions) {
+    let panel = document.getElementById(ANSWER_PANEL_ID);
+
+    if (!panel) {
+      panel = createAnswerPanel();
+    }
+
+    const content = panel.querySelector('.answer-panel-content');
+    content.innerHTML = '';
+
+    if (!questions || questions.length === 0) {
+      content.innerHTML = `
+        <div style="text-align: center; color: #94a3b8; padding: 40px 0;">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin-bottom: 16px;">
+            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/>
+            <path d="M24 16v8M24 28h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p style="margin: 0;">${getMessage('noQuestionsFound')}</p>
+        </div>
+      `;
+    } else {
+      const countText = getMessage('questionsFound', [questions.length.toString()]);
+      content.innerHTML = `
+        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">${countText}</p>
+      `;
+
+      questions.forEach((item, index) => {
+        const qaItem = document.createElement('div');
+        qaItem.style.cssText = `
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 8px;
+          padding: 16px;
+          margin-bottom: 12px;
+        `;
+
+        const qTitle = document.createElement('div');
+        qTitle.style.cssText = `
+          font-weight: 600;
+          margin-bottom: 8px;
+          color: #e2e8f0;
+        `;
+        qTitle.textContent = `Q${index + 1}: ${item.question}`;
+
+        const aContent = document.createElement('div');
+        aContent.style.cssText = `
+          color: #94a3b8;
+          font-size: 14px;
+          line-height: 1.6;
+        `;
+        aContent.textContent = `A: ${item.answer}`;
+
+        qaItem.appendChild(qTitle);
+        qaItem.appendChild(aContent);
+        content.appendChild(qaItem);
+      });
+    }
+
+    requestAnimationFrame(() => {
+      panel.style.transform = 'translateX(0)';
+    });
   }
 
   function createToastElement(toastId) {
@@ -569,6 +714,7 @@ let loadingToastId = null; // Track loading toast ID
     if (e.key === 'Escape') {
       hideButton();
       hideAllToasts();
+      closeAnswerPanel();
     }
   });
 
@@ -584,6 +730,15 @@ let loadingToastId = null; // Track loading toast ID
     if (request.action === 'extractContent') {
       const content = extractMainContent();
       sendResponse({ content: content });
+    }
+    return true;
+  });
+
+  // Listen for SHOW_ANSWER_PANEL from popup
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'SHOW_ANSWER_PANEL') {
+      renderAnswerPanel(message.questions);
+      sendResponse({ success: true });
     }
     return true;
   });
