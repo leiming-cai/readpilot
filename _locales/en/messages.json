@@ -96,7 +96,7 @@
     "description": "Floating button text"
   },
   "apiKeyLabel": {
-    "message": "DeepSeek API Key",
+    "message": "API Key",
     "description": "API key input label"
   },
   "apiKeyPlaceholder": {
