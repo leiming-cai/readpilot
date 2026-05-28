@@ -353,16 +353,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      const answerPrompt = `你是一个答题助手。请分析以下页面内容，找出所有题目（问句形式）并给出准确答案。
-返回格式为 JSON：
-{
-  "questions": [
-    {"question": "题目1", "answer": "答案1"},
-    {"question": "题目2", "answer": "答案2"}
-  ]
-}
-如果页面中没有题目，返回空的 questions 数组。
-只返回 JSON，不要有其他文字。`;
+      const answerPrompt = `你是一个专业的答题助手。请仔细阅读以下页面内容：
+
+1. 首先判断这个页面内容属于哪个领域（如：数学、物理、化学、历史、地理、生物、编程、经济、法律、医学、工程等）
+2. 然后假设你是该领域的专家
+3. 从页面内容中找出所有问题并给出准确答案
+4. 如果是数学或计算类问题，请给出完整计算过程
+5. 如果是概念解释类问题，请用通俗易懂的语言解释
+
+返回格式为严格的JSON数组，不要有任何其他文字：
+[
+  {
+    "question": "问题1",
+    "answer": "答案1（若是计算题需包含计算过程）",
+    "domain": "领域名称"
+  },
+  {
+    "question": "问题2",
+    "answer": "答案2",
+    "domain": "领域名称"
+  }
+]
+
+如果没有找到任何问题，返回空数组：[]`;
 
       const apiResponse = await fetch(`${settings.apiBaseUrl}/chat/completions`, {
         method: 'POST',
@@ -466,11 +479,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       console.log('Parsed answerData:', answerData);
 
+      // Handle both array and object formats
+      const questions = Array.isArray(answerData) ? answerData : (answerData.questions || []);
+
       // Send results to content script to display in side panel
       if (tab.id) {
         chrome.tabs.sendMessage(tab.id, {
           type: 'SHOW_ANSWER_PANEL',
-          questions: answerData.questions || []
+          questions: questions
         });
       }
 
