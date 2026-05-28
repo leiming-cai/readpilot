@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Debug: log raw AI content
       console.log('AI Raw Response:', aiContent);
 
-      // Parse JSON response - try multiple extraction strategies
+      // Parse JSON response - robust extraction
       let answerData = { questions: [] };
       try {
         // Strip markdown code blocks if present
@@ -408,42 +408,54 @@ document.addEventListener('DOMContentLoaded', () => {
           cleanedContent = codeBlockMatch[1].trim();
         }
 
-        // Strategy 1: Try direct JSON parse
+        // Try to fix common JSON issues
+        cleanedContent = cleanedContent
+          .replace(/,\s*\]/g, ']')  // trailing comma before ]
+          .replace(/,\s*\}/g, '}')  // trailing comma before }
+          .replace(/[\x00-\x1f]/g, ''); // remove control characters
+
+        // Try direct JSON parse
         try {
           answerData = JSON.parse(cleanedContent);
         } catch (e1) {
-          // Strategy 2: Try to find "questions" array within the content
-          const questionsMatch = cleanedContent.match(/"questions"\s*:\s*\[([\s\S]*?)\]/);
-          if (questionsMatch) {
-            const questionsArrayStr = '[' + questionsMatch[1] + ']';
-            try {
-              const parsedQuestions = JSON.parse(questionsArrayStr);
-              // Validate it's an array of objects with question/answer
-              if (Array.isArray(parsedQuestions)) {
-                answerData.questions = parsedQuestions.filter(q => q.question && q.answer);
+          // Find JSON object or array
+          const jsonStart = cleanedContent.search(/[\{\[]/);
+          if (jsonStart !== -1) {
+            // Try to find matching close bracket/brace
+            const firstChar = cleanedContent[jsonStart];
+            const closeChar = firstChar === '{' ? '}' : ']';
+            let depth = 0;
+            let endPos = cleanedContent.length;
+
+            for (let i = jsonStart; i < cleanedContent.length; i++) {
+              if (cleanedContent[i] === firstChar) depth++;
+              else if (cleanedContent[i] === closeChar) {
+                depth--;
+                if (depth === 0) {
+                  endPos = i + 1;
+                  break;
+                }
               }
+            }
+
+            const jsonStr = cleanedContent.substring(jsonStart, endPos);
+            console.log('Trying to parse:', jsonStr.substring(0, 200) + '...');
+            try {
+              answerData = JSON.parse(jsonStr);
             } catch (e2) {
-              // Strategy 3: Find first { and match to end
-              const firstBrace = cleanedContent.indexOf('{');
-              if (firstBrace !== -1) {
-                let depth = 0;
-                let endPos = firstBrace;
-                for (let i = firstBrace; i < cleanedContent.length; i++) {
-                  if (cleanedContent[i] === '{') depth++;
-                  else if (cleanedContent[i] === '}') {
-                    depth--;
-                    if (depth === 0) {
-                      endPos = i + 1;
-                      break;
-                    }
-                  }
-                }
-                const jsonStr = cleanedContent.substring(firstBrace, endPos);
-                try {
-                  answerData = JSON.parse(jsonStr);
-                } catch (e3) {
-                  console.error('Failed to parse JSON after all strategies:', e3);
-                }
+              console.error('All JSON parse attempts failed:', e2);
+              // Last resort: try to extract question/answer pairs manually
+              const qaPairs = [];
+              const qMatches = cleanedContent.matchAll(/"question"\s*:\s*"([^"]+)"/g);
+              const aMatches = cleanedContent.matchAll(/"answer"\s*:\s*"([^"]+)"/g);
+              const questions = Array.from(qMatches).map(m => m[1]);
+              const answers = Array.from(aMatches).map(m => m[1]);
+              for (let i = 0; i < Math.min(questions.length, answers.length); i++) {
+                qaPairs.push({ question: questions[i], answer: answers[i] });
+              }
+              if (qaPairs.length > 0) {
+                answerData.questions = qaPairs;
+                console.log('Extracted', qaPairs.length, 'Q&A pairs via regex');
               }
             }
           }
@@ -451,6 +463,8 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {
         console.error('Failed to parse answer JSON:', e);
       }
+
+      console.log('Parsed answerData:', answerData);
 
       // Send results to content script to display in side panel
       if (tab.id) {
