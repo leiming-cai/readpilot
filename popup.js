@@ -395,18 +395,38 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await apiResponse.json();
       const aiContent = data.choices?.[0]?.message?.content || '';
 
-      // Parse JSON response
-      let answerData;
+      // Parse JSON response - try multiple extraction strategies
+      let answerData = { questions: [] };
       try {
-        const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          answerData = JSON.parse(jsonMatch[0]);
-        } else {
-          answerData = { questions: [] };
+        // Strategy 1: Try direct JSON parse first
+        try {
+          answerData = JSON.parse(aiContent);
+        } catch (e1) {
+          // Strategy 2: Try to find JSON object with balanced braces
+          const firstBrace = aiContent.indexOf('{');
+          if (firstBrace !== -1) {
+            let depth = 0;
+            let endPos = firstBrace;
+            for (let i = firstBrace; i < aiContent.length; i++) {
+              if (aiContent[i] === '{') depth++;
+              else if (aiContent[i] === '}') {
+                depth--;
+                if (depth === 0) {
+                  endPos = i + 1;
+                  break;
+                }
+              }
+            }
+            const jsonStr = aiContent.substring(firstBrace, endPos);
+            try {
+              answerData = JSON.parse(jsonStr);
+            } catch (e2) {
+              console.error('Failed to parse extracted JSON:', e2);
+            }
+          }
         }
       } catch (e) {
         console.error('Failed to parse answer JSON:', e);
-        answerData = { questions: [] };
       }
 
       // Send results to content script to display in side panel
