@@ -150,7 +150,7 @@
     "description": "Instructions header"
   },
   "apiKeyInstructions": {
-    "message": "1. Visit DeepSeek Platform\n2. Create an account or sign in\n3. Navigate to API Keys section\n4. Create a new API key and copy it here",
+    "message": "1. Visit your AI provider's platform\n2. Create an account or sign in\n3. Navigate to API Keys section\n4. Create a new API key and copy it here",
     "description": "API key instructions"
   },
   "apiConfiguration": {
