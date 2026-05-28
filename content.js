@@ -377,7 +377,7 @@ let loadingToastId = null; // Track loading toast ID
     // Show/hide settings link
     const settingsLink = toastElement.querySelector('.toast-settings-link');
     if (showSettingsLink) {
-      settingsLink.href = 'options.html';
+      settingsLink.href = chrome.runtime.getURL('options.html');
       settingsLink.classList.add('show');
     }
 
