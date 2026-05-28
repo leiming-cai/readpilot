@@ -117,6 +117,14 @@ let loadingToastId = null; // Track loading toast ID
           </svg>
         </button>
       </div>
+      <a class="toast-settings-link" href="#" target="_blank">
+        <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M16.5 10a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 3v1.5M10 15.5V17M3 10h1.5M15.5 10H17M4.93 4.93l1.06 1.06M14.01 14.01l1.06 1.06M4.93 15.07l1.06-1.06M14.01 5.99l1.06-1.06" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span data-i18n="goToSettings">${getMessage('goToSettings')}</span>
+      </a>
     `;
 
     // Add header and content styling
@@ -185,6 +193,24 @@ let loadingToastId = null; // Track loading toast ID
       .toast-copy.copied .icon-check {
         display: block;
         color: #22c55e;
+      }
+      .toast-settings-link {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 12px;
+        transition: color 0.2s;
+      }
+      .toast-settings-link:hover {
+        color: #f1f5f9;
+      }
+      .toast-settings-link.show {
+        display: flex;
       }
     `;
     toast.appendChild(style);
@@ -318,7 +344,7 @@ let loadingToastId = null; // Track loading toast ID
     });
   }
 
-  async function showToast(message, isError = false, showCountdown = true) {
+  async function showToast(message, isError = false, showCountdown = true, showSettingsLink = false) {
     // If showing result (non-loading) and there's a loading toast, remove it first
     if (showCountdown && loadingToastId !== null) {
       hideToast(loadingToastId);
@@ -346,6 +372,13 @@ let loadingToastId = null; // Track loading toast ID
     if (!showCountdown) {
       countdownEl.style.display = 'none';
       loadingToastId = toastId; // Track this as loading toast
+    }
+
+    // Show/hide settings link
+    const settingsLink = toastElement.querySelector('.toast-settings-link');
+    if (showSettingsLink) {
+      settingsLink.href = 'options.html';
+      settingsLink.classList.add('show');
     }
 
     // Add to DOM
@@ -394,7 +427,7 @@ let loadingToastId = null; // Track loading toast ID
     console.log('ReadPilot settings:', settings);
 
     if (!settings.apiKey) {
-      showToast(getMessage('apiKeyNotConfigured'), true);
+      showToast(getMessage('apiKeyNotConfigured'), true, true, true);
       return;
     }
 
@@ -428,7 +461,7 @@ let loadingToastId = null; // Track loading toast ID
         if (response.status === 429) {
           showToast(getMessage('apiRateLimit'), true);
         } else if (response.status === 401) {
-          showToast(getMessage('invalidApiKey'), true);
+          showToast(getMessage('invalidApiKey'), true, true, true);
         } else {
           showToast(getMessage('apiError', [response.status.toString()]), true);
         }
