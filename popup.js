@@ -74,6 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
     el.textContent = getMessage(key);
   });
 
+  // Apply i18n to title attributes
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    el.title = getMessage(key);
+  });
+
   // Initialize template selector
   async function initTemplateSelector() {
     try {
