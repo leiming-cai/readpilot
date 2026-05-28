@@ -411,8 +411,8 @@ let loadingToastId = null; // Track loading toast ID
       });
     });
 
-    // Start countdown if needed
-    if (showCountdown && !isError) {
+    // Start countdown if needed (including error toasts)
+    if (showCountdown) {
       startCountdownForToast(toastData);
     }
 
