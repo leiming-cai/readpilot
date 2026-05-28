@@ -109,6 +109,12 @@
       border-color: var(--primary);
     }
 
+    input[readonly] {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      cursor: not-allowed;
+    }
+
     .slider-container {
       display: flex;
       align-items: center;
@@ -295,10 +301,6 @@
     .template-card:hover {
       border-color: var(--primary);
     }
-
-    .hidden-group {
-      display: none !important;
-    }
   </style>
 </head>
 <body>
@@ -339,7 +341,7 @@
       </select>
     </div>
 
-    <div class="form-group" id="customUrlGroup" style="display: none;">
+    <div class="form-group">
       <label for="apiBaseUrl" data-i18n="apiBaseUrlLabel">API Base URL</label>
       <input type="text" id="apiBaseUrl" placeholder="https://api.example.com/v1">
     </div>

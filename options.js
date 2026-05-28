@@ -105,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const apiKeyInput = document.getElementById('apiKey');
   const apiBaseUrlInput = document.getElementById('apiBaseUrl');
   const apiProviderInput = document.getElementById('apiProvider');
-  const customUrlGroup = document.getElementById('customUrlGroup');
   const maxTokensSlider = document.getElementById('maxTokens');
   const maxTokensValue = document.getElementById('maxTokensValue');
   const saveBtn = document.getElementById('saveBtn');
@@ -120,11 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
   apiProviderInput.addEventListener('change', () => {
     selectedProvider = apiProviderInput.value;
     if (selectedProvider === 'custom') {
-      customUrlGroup.classList.remove('hidden-group');
+      apiBaseUrlInput.removeAttribute('readonly');
       apiBaseUrlInput.value = '';
       apiBaseUrlInput.focus();
     } else {
-      customUrlGroup.classList.add('hidden-group');
+      apiBaseUrlInput.setAttribute('readonly', true);
       apiBaseUrlInput.value = API_PROVIDERS[selectedProvider].url;
     }
   });
@@ -179,10 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
       apiProviderInput.value = detectedProvider;
 
       if (detectedProvider === 'custom') {
-        customUrlGroup.classList.remove('hidden-group');
+        apiBaseUrlInput.removeAttribute('readonly');
         apiBaseUrlInput.value = savedUrl;
       } else {
-        customUrlGroup.classList.add('hidden-group');
+        apiBaseUrlInput.setAttribute('readonly', true);
         apiBaseUrlInput.value = API_PROVIDERS[detectedProvider].url;
       }
     });
@@ -511,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
     apiKeyInput.value = '';
     apiProviderInput.value = 'deepseek';
     selectedProvider = 'deepseek';
-    customUrlGroup.classList.add('hidden-group');
+    apiBaseUrlInput.setAttribute('readonly', true);
     apiBaseUrlInput.value = API_PROVIDERS.deepseek.url;
     maxTokensSlider.value = DEFAULT_MAX_TOKENS;
     maxTokensValue.textContent = DEFAULT_MAX_TOKENS;
