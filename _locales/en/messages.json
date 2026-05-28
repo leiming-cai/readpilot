@@ -300,5 +300,9 @@
   "copied": {
     "message": "Copied!",
     "description": "Copied confirmation"
+  },
+  "goToSettings": {
+    "message": "Go to Settings",
+    "description": "Link to settings page"
   }
 }

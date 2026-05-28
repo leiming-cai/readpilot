@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const retryBtn = document.getElementById('retryBtn');
   const emptyState = document.getElementById('emptyState');
   const copyBtn = document.getElementById('copyBtn');
+  const settingsLink = document.getElementById('settingsLink');
 
   // Copy button handler
   if (copyBtn) {
@@ -156,9 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
     state.classList.remove('hidden');
   }
 
-  function showError(message, showRetry = true) {
+  function showError(message, showRetry = true, showSettings = false) {
     errorMessage.textContent = message;
     retryBtn.classList.toggle('hidden', !showRetry);
+    settingsLink.classList.toggle('hidden', !showSettings);
     showState(errorState);
   }
 
@@ -177,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const apiKey = await checkApiKey();
       if (!apiKey) {
-        showError(getMessage('apiKeyNotConfigured'));
+        showError(getMessage('apiKeyNotConfigured'), false, true);
         return;
       }
 

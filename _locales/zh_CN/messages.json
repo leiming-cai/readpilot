@@ -300,5 +300,9 @@
   "copied": {
     "message": "已复制！",
     "description": "Copied confirmation"
+  },
+  "goToSettings": {
+    "message": "前往设置",
+    "description": "Link to settings page"
   }
 }
