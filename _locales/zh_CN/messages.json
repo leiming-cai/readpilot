@@ -324,5 +324,39 @@
   "providerCustom": {
     "message": "自定义",
     "description": "Custom provider option"
+  },
+  "answerQuestions": {
+    "message": "答题",
+    "description": "Answer questions button text"
+  },
+  "answerQuestionsBtn": {
+    "message": "答题",
+    "description": "Answer questions button in popup"
+  },
+  "analyzingQuestions": {
+    "message": "正在分析题目...",
+    "description": "Loading state when analyzing questions"
+  },
+  "answerResults": {
+    "message": "答题结果",
+    "description": "Answer results panel title"
+  },
+  "noQuestionsFound": {
+    "message": "未找到题目",
+    "description": "Message when no questions found"
+  },
+  "questionsFound": {
+    "message": "找到 $COUNT$ 道题目",
+    "description": "Number of questions found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "closePanel": {
+    "message": "关闭",
+    "description": "Close panel button"
   }
 }

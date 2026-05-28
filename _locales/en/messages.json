@@ -324,5 +324,39 @@
   "providerCustom": {
     "message": "Custom",
     "description": "Custom provider option"
+  },
+  "answerQuestions": {
+    "message": "Answer Questions",
+    "description": "Answer questions button text"
+  },
+  "answerQuestionsBtn": {
+    "message": "Answer Questions",
+    "description": "Answer questions button in popup"
+  },
+  "analyzingQuestions": {
+    "message": "Analyzing questions...",
+    "description": "Loading state when analyzing questions"
+  },
+  "answerResults": {
+    "message": "Answer Results",
+    "description": "Answer results panel title"
+  },
+  "noQuestionsFound": {
+    "message": "No questions found",
+    "description": "Message when no questions found"
+  },
+  "questionsFound": {
+    "message": "$COUNT$ questions found",
+    "description": "Number of questions found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "closePanel": {
+    "message": "Close",
+    "description": "Close panel button"
   }
 }
