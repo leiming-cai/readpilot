@@ -26,7 +26,8 @@ A Chrome Manifest V3 browser extension providing page summarization and AI-power
 
 ### ⚙️ Settings Page
 - API Key management (secure local storage)
-- DeepSeek API URL configuration
+- Multiple API provider support (DeepSeek, OpenAI, Anthropic, Custom)
+- API URL configuration
 - Max Tokens adjustment (100-2000)
 - Auto-test connection on save
 
@@ -51,10 +52,8 @@ All buttons have internationalized hover tooltips.
 
 1. Click the extension icon
 2. Click **Settings** icon
-3. Enter your [DeepSeek API Key](https://platform.deepseek.com)
+3. Select your AI provider and enter your API Key
 4. Click **Save & Test** to save and verify
-
-> 💡 No API Key? Visit [DeepSeek Platform](https://platform.deepseek.com) to register and create one in API Keys section.
 
 ### Step 2: Summarize a Page
 
@@ -85,8 +84,8 @@ All buttons have internationalized hover tooltips.
 
 ```
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────┐
-│   popup.js      │─────▶│  content.js     │─────▶│ DeepSeek   │
-│  (Summary UI)   │      │  (Content Extract)│      │ API        │
+│   popup.js      │─────▶│  content.js     │─────▶│ AI API      │
+│  (Summary UI)   │      │  (Content Extract)│      │ (Multi-Provider)│
 └─────────────────┘      └─────────────────┘      └─────────────┘
         │                        │
         ▼                        ▼
@@ -140,15 +139,21 @@ Extension auto-detects Chrome browser language setting.
 ## Configuration
 
 1. Click extension icon → **Settings**
-2. Enter your [DeepSeek API Key](https://platform.deepseek.com)
-3. Optional: Adjust API URL and Max Tokens
+2. Select your AI provider
+3. Enter API Key and API URL (for custom provider)
 4. Click **Save & Test**
 
 ## API Config
 
+| Provider | Default API URL |
+|----------|----------------|
+| DeepSeek | `https://api.deepseek.com` |
+| OpenAI | `https://api.openai.com/v1` |
+| Anthropic | `https://api.anthropic.com` |
+| Custom | User-defined |
+
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| API Base URL | `https://api.deepseek.com` | DeepSeek API URL |
 | Max Tokens | 1000 | Summary max tokens |
 
 ## Error Handling
@@ -164,7 +169,7 @@ Extension auto-detects Chrome browser language setting.
 ## Privacy
 
 - API Key stored locally in `chrome.storage.local`
-- All API calls go directly to DeepSeek servers
+- All API calls go directly to your configured AI provider servers
 - No user data collected or uploaded
 
 ## Development

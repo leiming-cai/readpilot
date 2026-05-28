@@ -26,7 +26,8 @@
 
 ### ⚙️ 设置页面
 - API Key 管理（安全存储于本地）
-- DeepSeek API 地址配置
+- 多 API 提供商支持（DeepSeek、OpenAI、Anthropic、自定义）
+- API 地址配置
 - Max Tokens 调节（100-2000）
 - 保存时自动测试连接
 
@@ -49,10 +50,8 @@
 
 1. 点击浏览器右上角扩展图标
 2. 点击 **设置** 图标，进入设置页面
-3. 输入您的 [DeepSeek API Key](https://platform.deepseek.com)
+3. 选择您的 AI 提供商并输入 API Key
 4. 点击 **保存并测试** 验证连接
-
-> 💡 没有 API Key？访问 [DeepSeek 平台](https://platform.deepseek.com) 注册账号后在 API Keys 页面创建。
 
 ### 第二步：使用页面摘要
 
@@ -83,8 +82,8 @@
 
 ```
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────┐
-│   popup.js      │─────▶│  content.js     │─────▶│ DeepSeek   │
-│  (摘要界面)      │      │  (内容提取)      │      │ API        │
+│   popup.js      │─────▶│  content.js     │─────▶│ AI API      │
+│  (摘要界面)      │      │  (内容提取)      │      │ (多提供商)   │
 └─────────────────┘      └─────────────────┘      └─────────────┘
         │                        │
         ▼                        ▼
@@ -138,15 +137,21 @@ ReadPilot/
 ## 配置说明
 
 1. 点击扩展图标 → **设置**
-2. 输入您的 [DeepSeek API Key](https://platform.deepseek.com)
-3. 可选：调整 API 地址和 Max Tokens
+2. 选择您的 AI 提供商
+3. 输入 API Key 和 API 地址（自定义提供商）
 4. 点击 **保存并测试** 保存并验证连接
 
 ## API 配置
 
+| 提供商 | 默认 API 地址 |
+|--------|--------------|
+| DeepSeek | `https://api.deepseek.com` |
+| OpenAI | `https://api.openai.com/v1` |
+| Anthropic | `https://api.anthropic.com` |
+| 自定义 | 用户自定义 |
+
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
-| API 地址 | `https://api.deepseek.com` | DeepSeek API 地址 |
 | Max Tokens | 1000 | 摘要最大 token 数 |
 
 ## 错误处理
@@ -162,7 +167,7 @@ ReadPilot/
 ## 隐私说明
 
 - API Key 仅存储在本地 `chrome.storage.local`
-- 所有 API 调用直接与 DeepSeek 服务器通信
+- 所有 API 调用直接与您配置的 AI 提供商服务器通信
 - 不收集或上传任何用户数据
 
 ## 开发相关
