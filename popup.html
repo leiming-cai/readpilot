@@ -100,9 +100,24 @@
         <span data-i18n="summarizePage">Summarize Page</span>
       </button>
 
+      <button id="answerBtn" class="summarize-btn" data-i18n-title="answerQuestionsBtn" title="Answer Questions">
+        <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M9 2L3 6L9 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11 10L17 6L11 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M3 16H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span data-i18n="answerQuestions">Answer Questions</span>
+      </button>
+
       <div id="loadingState" class="loading-state hidden">
         <div class="spinner"></div>
         <p data-i18n="analyzingContent">Analyzing page content...</p>
+      </div>
+
+      <div id="answerLoadingState" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p data-i18n="analyzingQuestions">Analyzing questions...</p>
       </div>
 
       <div id="summaryOutput" class="summary-output hidden">
