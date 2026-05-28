@@ -96,11 +96,11 @@
     "description": "Floating button text"
   },
   "apiKeyLabel": {
-    "message": "DeepSeek API密钥",
+    "message": "API密钥",
     "description": "API key input label"
   },
   "apiKeyPlaceholder": {
-    "message": "输入您的DeepSeek API密钥",
+    "message": "输入您的API密钥",
     "description": "API key input placeholder"
   },
   "apiBaseUrlLabel": {
@@ -150,7 +150,7 @@
     "description": "Instructions header"
   },
   "apiKeyInstructions": {
-    "message": "1. 访问 DeepSeek 平台\n2. 创建账号或登录\n3. 进入 API密钥 页面\n4. 创建新密钥并复制到这里",
+    "message": "1. 访问您的AI服务商平台\n2. 创建账号或登录\n3. 进入 API密钥 页面\n4. 创建新密钥并复制到这里",
     "description": "API key instructions"
   },
   "apiConfiguration": {
@@ -166,8 +166,8 @@
     "description": "Settings header"
   },
   "deepSeekPlatform": {
-    "message": "DeepSeek 平台",
-    "description": "DeepSeek platform link text"
+    "message": "AI服务商平台",
+    "description": "AI provider platform link text"
   },
   "createAccount": {
     "message": "创建账号或登录",
