@@ -425,16 +425,17 @@ document.addEventListener('DOMContentLoaded', () => {
     maxTokensValue.textContent = maxTokensSlider.value;
   });
 
-  async function testApiConnection(apiKey, baseUrl, provider = 'deepseek') {
-    // Model mapping by provider
-    const providerModels = {
-      deepseek: 'deepseek-chat',
-      openai: 'gpt-3.5-turbo',
-      anthropic: 'claude-3-haiku-20240307',
-      custom: 'deepseek-chat' // fallback for custom
-    };
-
-    const model = providerModels[provider] || 'deepseek-chat';
+  async function testApiConnection(apiKey, baseUrl, provider = 'deepseek', model = null) {
+    // If model not provided, use provider defaults
+    if (!model) {
+      const providerModels = {
+        deepseek: 'deepseek-chat',
+        openai: 'gpt-4',
+        anthropic: 'claude-3-sonnet-20240229',
+        custom: 'deepseek-chat'
+      };
+      model = providerModels[provider] || 'deepseek-chat';
+    }
 
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
@@ -489,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setLoading(true);
 
     try {
-      await testApiConnection(apiKey, apiBaseUrl, selectedProvider);
+      await testApiConnection(apiKey, apiBaseUrl, selectedProvider, apiModel);
 
       chrome.storage.local.set({
         apiKey: apiKey,
