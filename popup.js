@@ -357,33 +357,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
 1. 首先判断这个页面内容属于哪个领域（如：数学、物理、化学、历史、地理、生物、编程、经济、法律、医学等）
 2. 假设你是该领域的专家
-3. 从页面内容中找出所有题目，包括：
-   - 单选题（ABCD选项）
-   - 多选题（多个正确选项）
+3. **重要**：请仔细找出页面中的所有题目，不要遗漏任何一个！题目数量可能很多（可能有20道以上）。
+4. 题目类型包括：
+   - 单选题（ABCD选项，选出一个正确答案）
+   - 多选题（多个正确选项，如ABC、ACD等）
    - 判断题（正确/错误）
    - 填空题
    - 问答题/计算题
-4. 根据题目类型给出准确答案：
-   - 单选题：给出正确选项和简要解释
-   - 多选题：列出所有正确选项
+5. 根据题目类型给出准确答案：
+   - 单选题：给出正确选项字母和简要解释
+   - 多选题：列出所有正确选项字母组合
    - 判断题：给出正确或错误
    - 填空题/问答题：给出完整答案
+
+**请务必找出所有题目，不要遗漏！**
 
 返回格式为严格的JSON数组，不要有任何其他文字：
 [
   {
     "type": "single_choice",
-    "question": "题目完整文本",
+    "question": "题目完整文本（包括题干和所有选项）",
     "options": ["A. 选项1", "B. 选项2", "C. 选项3", "D. 选项4"],
     "answer": "B",
-    "explanation": "简要解释为什么B是正确的"
+    "explanation": "简要解释"
   },
   {
     "type": "multiple_choice",
     "question": "题目完整文本",
     "options": ["A. 选项1", "B. 选项2", "C. 选项3", "D. 选项4"],
     "answer": "ACD",
-    "explanation": "为什么A、C、D是正确答案"
+    "explanation": "解释"
   },
   {
     "type": "true_false",
@@ -400,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
   {
     "type": "essay",
     "question": "题目完整文本",
-    "answer": "问答题/计算题的完整答案",
+    "answer": "完整答案",
     "explanation": "详细解答过程"
   }
 ]
@@ -419,8 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { role: 'system', content: answerPrompt },
             { role: 'user', content: content }
           ],
-          max_tokens: settings.maxTokens,
-          temperature: 0.7
+          max_tokens: Math.max(settings.maxTokens, 2000),
+          temperature: 0.3
         })
       });
 
@@ -532,8 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // This function is injected and executed in the target page context
-function extractMainContent() {
-  const MAX_CHARS = 5000;
+function extractMainContent(maxChars = 15000) {
+  const MAX_CHARS = maxChars;
   const unwantedTags = ['script', 'style', 'nav', 'footer', 'aside', 'iframe', 'img', 'figure', 'noscript', 'svg', 'button', 'input', 'textarea', 'select'];
 
   function cloneAndClean(element) {
