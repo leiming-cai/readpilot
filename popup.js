@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { role: 'system', content: answerPrompt },
             { role: 'user', content: content }
           ],
-          max_tokens: Math.max(settings.maxTokens, 2000),
+          max_tokens: Math.max(settings.maxTokens, 4000),
           temperature: 0.3
         })
       });
@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // This function is injected and executed in the target page context
-function extractMainContent(maxChars = 15000) {
+function extractMainContent(maxChars = 25000) {
   const MAX_CHARS = maxChars;
   const unwantedTags = ['script', 'style', 'nav', 'footer', 'aside', 'iframe', 'img', 'figure', 'noscript', 'svg', 'button', 'input', 'textarea', 'select'];
 
