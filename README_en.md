@@ -24,6 +24,18 @@ A Chrome Manifest V3 browser extension providing page summarization and AI-power
 - Supports up to **3 Toast notifications** stacked
 - Copy button to copy explanation content
 
+### ❓ Answer Questions
+- Click extension icon → Click **"Answer Questions"**
+- Automatically analyzes page content and identifies question types:
+  - **Single Choice**: Identifies ABCD options, provides correct answer and explanation
+  - **Multiple Choice**: Identifies multiple correct options
+  - **True/False**: Provides correct/incorrect judgment
+  - **Fill in Blank**: Provides correct answer
+  - **Essay/Calculation**: Provides complete answer and solution steps
+- Results displayed in side panel (slides in from right)
+- Close button and ESC key to close panel
+- Supports up to 25,000 character content extraction and 6,000 tokens output
+
 ### ⚙️ Settings Page
 - API Key management (secure local storage)
 - Multiple API provider support (DeepSeek, OpenAI, Anthropic, Custom)
@@ -79,6 +91,8 @@ All buttons have internationalized hover tooltips.
 | Button click does nothing | Check if API Key is configured |
 | Explanation is slow | Network delay or API rate limit, try again later |
 | Toast covers content | Click close button or wait 60s |
+| Answer results incomplete | Wait longer for large sets of questions |
+| Side panel won't close | Click close button or press ESC |
 
 ## Architecture
 
@@ -188,4 +202,4 @@ MIT License
 
 ## Version
 
-v1.2.0
+v1.3.0
