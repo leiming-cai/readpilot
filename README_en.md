@@ -159,12 +159,17 @@ Extension auto-detects Chrome browser language setting.
 
 ## API Config
 
+> ⚠️ **Self-hosted LLM not supported**: Reasons:
+> - ❌ Cannot search online for latest content
+> - ❌ Quality usually inferior to established providers
+> - ✅ Cloud providers continuously update model capabilities
+
 | Provider | Default API URL |
 |----------|----------------|
 | DeepSeek | `https://api.deepseek.com` |
 | OpenAI | `https://api.openai.com/v1` |
 | Anthropic | `https://api.anthropic.com` |
-| Custom | User-defined |
+| Custom | User-defined (must support OpenAI-compatible format) |
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
