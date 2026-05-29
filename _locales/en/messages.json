@@ -107,6 +107,14 @@
     "message": "API Base URL",
     "description": "API URL input label"
   },
+  "apiModelLabel": {
+    "message": "Model",
+    "description": "Model name input label"
+  },
+  "apiModelPlaceholder": {
+    "message": "Enter model name, e.g., qwen-turbo",
+    "description": "Model name input placeholder"
+  },
   "maxTokensLabel": {
     "message": "Max Tokens",
     "description": "Max tokens slider label"

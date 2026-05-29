@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const apiKeyInput = document.getElementById('apiKey');
   const apiBaseUrlInput = document.getElementById('apiBaseUrl');
   const apiProviderInput = document.getElementById('apiProvider');
+  const apiModelInput = document.getElementById('apiModel');
   const maxTokensSlider = document.getElementById('maxTokens');
   const maxTokensValue = document.getElementById('maxTokensValue');
   const saveBtn = document.getElementById('saveBtn');
@@ -122,9 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
       apiBaseUrlInput.removeAttribute('readonly');
       apiBaseUrlInput.value = '';
       apiBaseUrlInput.focus();
+      apiModelInput.removeAttribute('readonly');
+      apiModelInput.value = '';
     } else {
       apiBaseUrlInput.setAttribute('readonly', true);
       apiBaseUrlInput.value = API_PROVIDERS[selectedProvider].url;
+      apiModelInput.setAttribute('readonly', true);
+      apiModelInput.value = API_PROVIDERS[selectedProvider].model;
     }
   });
 
@@ -133,10 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // API Provider presets
   const API_PROVIDERS = {
-    deepseek: { url: 'https://api.deepseek.com', name: 'DeepSeek' },
-    openai: { url: 'https://api.openai.com/v1', name: 'OpenAI' },
-    anthropic: { url: 'https://api.anthropic.com', name: 'Anthropic' },
-    custom: { url: '', name: 'Custom' }
+    deepseek: { url: 'https://api.deepseek.com', name: 'DeepSeek', model: 'deepseek-chat' },
+    openai: { url: 'https://api.openai.com/v1', name: 'OpenAI', model: 'gpt-4' },
+    anthropic: { url: 'https://api.anthropic.com', name: 'Anthropic', model: 'claude-3-sonnet-20240229' },
+    custom: { url: '', name: 'Custom', model: '' }
   };
 
   let selectedProvider = 'deepseek';
@@ -159,9 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadSettings() {
-    chrome.storage.local.get(['apiKey', 'apiBaseUrl', 'maxTokens'], (result) => {
+    chrome.storage.local.get(['apiKey', 'apiBaseUrl', 'maxTokens', 'apiModel'], (result) => {
       apiKeyInput.value = result.apiKey || '';
       maxTokensSlider.value = result.maxTokens || DEFAULT_MAX_TOKENS;
+      apiModelInput.value = result.apiModel || API_PROVIDERS[selectedProvider]?.model || '';
       maxTokensValue.textContent = result.maxTokens || DEFAULT_MAX_TOKENS;
 
       // Detect provider from URL
@@ -456,10 +462,12 @@ document.addEventListener('DOMContentLoaded', () => {
   async function saveSettings() {
     const apiKey = apiKeyInput.value.trim();
     let apiBaseUrl = apiBaseUrlInput.value.trim();
+    let apiModel = apiModelInput.value.trim();
 
     // Use provider preset URL if not custom
     if (selectedProvider !== 'custom') {
       apiBaseUrl = API_PROVIDERS[selectedProvider].url;
+      apiModel = API_PROVIDERS[selectedProvider].model;
     }
 
     if (!apiBaseUrl) {
@@ -487,7 +495,8 @@ document.addEventListener('DOMContentLoaded', () => {
         apiKey: apiKey,
         apiBaseUrl: apiBaseUrl,
         maxTokens: maxTokens,
-        apiProvider: selectedProvider
+        apiProvider: selectedProvider,
+        apiModel: apiModel
       }, () => {
         showStatus(getMessage('settingsSaved'), false);
       });
@@ -512,10 +521,12 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedProvider = 'deepseek';
     apiBaseUrlInput.setAttribute('readonly', true);
     apiBaseUrlInput.value = API_PROVIDERS.deepseek.url;
+    apiModelInput.setAttribute('readonly', true);
+    apiModelInput.value = API_PROVIDERS.deepseek.model;
     maxTokensSlider.value = DEFAULT_MAX_TOKENS;
     maxTokensValue.textContent = DEFAULT_MAX_TOKENS;
 
-    chrome.storage.local.remove(['apiKey', 'apiBaseUrl', 'maxTokens', 'apiProvider'], () => {
+    chrome.storage.local.remove(['apiKey', 'apiBaseUrl', 'maxTokens', 'apiProvider', 'apiModel'], () => {
       showStatus(getMessage('settingsReset'), false);
     });
   }

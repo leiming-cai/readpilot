@@ -107,6 +107,14 @@
     "message": "API地址",
     "description": "API URL input label"
   },
+  "apiModelLabel": {
+    "message": "模型名称",
+    "description": "Model name input label"
+  },
+  "apiModelPlaceholder": {
+    "message": "输入模型名称，如 qwen-turbo",
+    "description": "Model name input placeholder"
+  },
   "maxTokensLabel": {
     "message": "最大Token数",
     "description": "Max tokens slider label"

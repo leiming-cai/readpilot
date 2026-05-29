@@ -231,10 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const settings = await new Promise((resolve) => {
-        chrome.storage.local.get(['apiBaseUrl', 'maxTokens'], (result) => {
+        chrome.storage.local.get(['apiBaseUrl', 'maxTokens', 'apiModel'], (result) => {
           resolve({
             apiBaseUrl: result.apiBaseUrl || 'https://api.deepseek.com',
-            maxTokens: result.maxTokens || 1000
+            maxTokens: result.maxTokens || 1000,
+            apiModel: result.apiModel || 'deepseek-chat'
           });
         });
       });
@@ -253,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: 'deepseek-chat',
+          model: settings.apiModel || 'deepseek-chat',
           messages: [
             {
               role: 'system',
@@ -344,11 +345,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const settings = await new Promise((resolve) => {
-        chrome.storage.local.get(['apiBaseUrl', 'apiProvider', 'maxTokens'], (result) => {
+        chrome.storage.local.get(['apiBaseUrl', 'apiProvider', 'maxTokens', 'apiModel'], (result) => {
           resolve({
             apiBaseUrl: result.apiBaseUrl || 'https://api.deepseek.com',
             apiProvider: result.apiProvider || 'deepseek',
-            maxTokens: result.maxTokens || 1000
+            maxTokens: result.maxTokens || 1000,
+            apiModel: result.apiModel || 'deepseek-chat'
           });
         });
       });
@@ -417,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: settings.apiProvider === 'openai' ? 'gpt-4' : 'deepseek-chat',
+          model: settings.apiModel || 'deepseek-chat',
           messages: [
             { role: 'system', content: answerPrompt },
             { role: 'user', content: content }
