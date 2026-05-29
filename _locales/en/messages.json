@@ -358,5 +358,25 @@
   "closePanel": {
     "message": "Close",
     "description": "Close panel button"
+  },
+  "singleChoice": {
+    "message": "Single Choice",
+    "description": "Single choice question type"
+  },
+  "multipleChoice": {
+    "message": "Multiple Choice",
+    "description": "Multiple choice question type"
+  },
+  "trueFalse": {
+    "message": "True/False",
+    "description": "True/false question type"
+  },
+  "fillBlank": {
+    "message": "Fill in Blank",
+    "description": "Fill in blank question type"
+  },
+  "essay": {
+    "message": "Essay",
+    "description": "Essay question type"
   }
 }

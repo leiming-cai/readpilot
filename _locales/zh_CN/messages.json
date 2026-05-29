@@ -358,5 +358,25 @@
   "closePanel": {
     "message": "关闭",
     "description": "Close panel button"
+  },
+  "singleChoice": {
+    "message": "单选题",
+    "description": "Single choice question type"
+  },
+  "multipleChoice": {
+    "message": "多选题",
+    "description": "Multiple choice question type"
+  },
+  "trueFalse": {
+    "message": "判断题",
+    "description": "True/false question type"
+  },
+  "fillBlank": {
+    "message": "填空题",
+    "description": "Fill in blank question type"
+  },
+  "essay": {
+    "message": "问答题",
+    "description": "Essay question type"
   }
 }

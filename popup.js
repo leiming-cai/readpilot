@@ -355,27 +355,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const answerPrompt = `你是一个专业的答题助手。请仔细阅读以下页面内容：
 
-1. 首先判断这个页面内容属于哪个领域（如：数学、物理、化学、历史、地理、生物、编程、经济、法律、医学、工程等）
-2. 然后假设你是该领域的专家
-3. 从页面内容中找出所有问题并给出准确答案
-4. 如果是数学或计算类问题，请给出完整计算过程
-5. 如果是概念解释类问题，请用通俗易懂的语言解释
+1. 首先判断这个页面内容属于哪个领域（如：数学、物理、化学、历史、地理、生物、编程、经济、法律、医学等）
+2. 假设你是该领域的专家
+3. 从页面内容中找出所有题目，包括：
+   - 单选题（ABCD选项）
+   - 多选题（多个正确选项）
+   - 判断题（正确/错误）
+   - 填空题
+   - 问答题/计算题
+4. 根据题目类型给出准确答案：
+   - 单选题：给出正确选项和简要解释
+   - 多选题：列出所有正确选项
+   - 判断题：给出正确或错误
+   - 填空题/问答题：给出完整答案
 
 返回格式为严格的JSON数组，不要有任何其他文字：
 [
   {
-    "question": "问题1",
-    "answer": "答案1（若是计算题需包含计算过程）",
-    "domain": "领域名称"
+    "type": "single_choice",
+    "question": "题目完整文本",
+    "options": ["A. 选项1", "B. 选项2", "C. 选项3", "D. 选项4"],
+    "answer": "B",
+    "explanation": "简要解释为什么B是正确的"
   },
   {
-    "question": "问题2",
-    "answer": "答案2",
-    "domain": "领域名称"
+    "type": "multiple_choice",
+    "question": "题目完整文本",
+    "options": ["A. 选项1", "B. 选项2", "C. 选项3", "D. 选项4"],
+    "answer": "ACD",
+    "explanation": "为什么A、C、D是正确答案"
+  },
+  {
+    "type": "true_false",
+    "question": "题目完整文本",
+    "answer": "正确",
+    "explanation": "简要解释"
+  },
+  {
+    "type": "fill_blank",
+    "question": "题目完整文本",
+    "answer": "填空题的答案",
+    "explanation": "简要解释"
+  },
+  {
+    "type": "essay",
+    "question": "题目完整文本",
+    "answer": "问答题/计算题的完整答案",
+    "explanation": "详细解答过程"
   }
 ]
 
-如果没有找到任何问题，返回空数组：[]`;
+如果没有找到任何题目，返回空数组：[]`;
 
       const apiResponse = await fetch(`${settings.apiBaseUrl}/chat/completions`, {
         method: 'POST',

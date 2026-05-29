@@ -181,6 +181,14 @@ let loadingToastId = null; // Track loading toast ID
         <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">${countText}</p>
       `;
 
+      const typeLabels = {
+        'single_choice': '单选题',
+        'multiple_choice': '多选题',
+        'true_false': '判断题',
+        'fill_blank': '填空题',
+        'essay': '问答题'
+      };
+
       questions.forEach((item, index) => {
         const qaItem = document.createElement('div');
         qaItem.style.cssText = `
@@ -190,24 +198,64 @@ let loadingToastId = null; // Track loading toast ID
           margin-bottom: 12px;
         `;
 
+        // Type badge
+        const typeBadge = document.createElement('span');
+        const typeLabel = typeLabels[item.type] || item.type || '题目';
+        typeBadge.textContent = typeLabel;
+        typeBadge.style.cssText = `
+          display: inline-block;
+          background: rgba(37, 99, 235, 0.3);
+          color: #60a5fa;
+          font-size: 11px;
+          padding: 2px 8px;
+          border-radius: 4px;
+          margin-bottom: 8px;
+        `;
+
+        // Question
         const qTitle = document.createElement('div');
         qTitle.style.cssText = `
           font-weight: 600;
           margin-bottom: 8px;
           color: #e2e8f0;
         `;
-        qTitle.textContent = `Q${index + 1}: ${item.question}`;
+        qTitle.textContent = `Q${index + 1}: ${item.question || item.q || ''}`;
 
-        const aContent = document.createElement('div');
-        aContent.style.cssText = `
-          color: #94a3b8;
+        // Options (for choice questions)
+        let optionsHtml = '';
+        if (item.options && Array.isArray(item.options)) {
+          optionsHtml = `<div style="margin: 8px 0; padding-left: 8px;">`;
+          item.options.forEach(opt => {
+            optionsHtml += `<div style="color: #94a3b8; font-size: 13px; margin-bottom: 4px;">${opt}</div>`;
+          });
+          optionsHtml += `</div>`;
+        }
+
+        // Answer
+        const answerLabel = document.createElement('div');
+        answerLabel.style.cssText = `
+          color: #22c55e;
+          font-weight: 600;
           font-size: 14px;
-          line-height: 1.6;
+          margin-top: 8px;
         `;
-        aContent.textContent = `A: ${item.answer}`;
+        answerLabel.textContent = `答案: ${item.answer || item.a || ''}`;
 
+        // Explanation
+        let explanationHtml = '';
+        if (item.explanation) {
+          explanationHtml = `<div style="color: #64748b; font-size: 13px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">${item.explanation}</div>`;
+        }
+
+        qaItem.appendChild(typeBadge);
         qaItem.appendChild(qTitle);
-        qaItem.appendChild(aContent);
+        if (optionsHtml) {
+          qaItem.innerHTML += optionsHtml;
+        }
+        qaItem.appendChild(answerLabel);
+        if (explanationHtml) {
+          qaItem.innerHTML += explanationHtml;
+        }
         content.appendChild(qaItem);
       });
     }
