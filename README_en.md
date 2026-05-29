@@ -154,8 +154,10 @@ Extension auto-detects Chrome browser language setting.
 
 1. Click extension icon → **Settings**
 2. Select your AI provider
-3. Enter API Key and API URL (for custom provider)
+3. Enter API Key, API URL, and Model name
 4. Click **Save & Test**
+
+> 💡 Custom providers (e.g., Qwen, Tongyi) need to manually enter the model name
 
 ## API Config
 
