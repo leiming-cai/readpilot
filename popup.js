@@ -515,6 +515,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // Handle both array and object formats
       const questions = Array.isArray(answerData) ? answerData : (answerData.questions || []);
 
+      // Hide loading state immediately after results are sent
+      answerLoadingState.classList.add('hidden');
+      answerBtn.disabled = false;
+
       // Send results to content script to display in side panel
       if (tab.id) {
         chrome.tabs.sendMessage(tab.id, {
@@ -525,6 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (error) {
       console.error('Answer questions error:', error);
+      answerLoadingState.classList.add('hidden');
       showError(getMessage('connectionError', [error.message || 'Unknown error']), true);
     } finally {
       answerBtn.disabled = false;
