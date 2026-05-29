@@ -265,6 +265,43 @@ let loadingToastId = null; // Track loading toast ID
     });
   }
 
+  function renderSummaryPanel(summary) {
+    let panel = document.getElementById(ANSWER_PANEL_ID);
+
+    if (!panel) {
+      panel = createAnswerPanel();
+    }
+
+    const content = panel.querySelector('.answer-panel-content');
+    content.innerHTML = '';
+
+    // Update header title
+    panel.querySelector('h3').textContent = getMessage('summary') || '摘要';
+
+    if (!summary) {
+      content.innerHTML = `
+        <div style="text-align: center; color: #94a3b8; padding: 40px 0;">
+          <p style="margin: 0;">${getMessage('noContentToSummarize') || 'No content'}</p>
+        </div>
+      `;
+    } else {
+      const summaryDiv = document.createElement('div');
+      summaryDiv.style.cssText = `
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        line-height: 1.7;
+        font-size: 14px;
+        color: #e2e8f0;
+      `;
+      summaryDiv.textContent = summary;
+      content.appendChild(summaryDiv);
+    }
+
+    requestAnimationFrame(() => {
+      panel.style.transform = 'translateX(0)';
+    });
+  }
+
   function createToastElement(toastId) {
     const toast = document.createElement('div');
     toast.id = TOAST_ID + '-' + toastId;
@@ -786,6 +823,9 @@ let loadingToastId = null; // Track loading toast ID
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'SHOW_ANSWER_PANEL') {
       renderAnswerPanel(message.questions);
+      sendResponse({ success: true });
+    } else if (message.type === 'SHOW_SUMMARY_PANEL') {
+      renderSummaryPanel(message.summary);
       sendResponse({ success: true });
     }
     return true;

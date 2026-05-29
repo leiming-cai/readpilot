@@ -284,8 +284,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await apiResponse.json();
       const summary = data.choices?.[0]?.message?.content || 'Unable to generate summary.';
 
-      summaryContent.textContent = summary;
-      showState(summaryOutput);
+      // Send summary to content script to display in side panel
+      if (tab.id) {
+        chrome.tabs.sendMessage(tab.id, {
+          type: 'SHOW_SUMMARY_PANEL',
+          summary: summary
+        });
+      }
+
+      // Hide loading state
+      loadingState.classList.add('hidden');
+      summarizeBtn.disabled = false;
     } catch (error) {
       console.error('Summarize error:', error);
       const errorMsg = error.message || '';
