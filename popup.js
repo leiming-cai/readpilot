@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { role: 'system', content: answerPrompt },
             { role: 'user', content: content }
           ],
-          max_tokens: Math.max(settings.maxTokens, 4000),
+          max_tokens: 6000,
           temperature: 0.3
         })
       });
